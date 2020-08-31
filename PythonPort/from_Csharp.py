@@ -247,8 +247,8 @@ def gpathil11(mword, opt, mode):
         yauyir = json.loads(yauyir_json)
         auyir = json.loads(auyir_json)
 
-        parinthu = [len(mword), 2]
-        ottran = [len(mword), 2]
+        parinthu = [[None,None] for i in range(len(mword))]
+        ottran = [[None,None] for i in range(len(mword))]
 
 
         for i in range(len(mword)):
@@ -260,7 +260,7 @@ def gpathil11(mword, opt, mode):
         for i in range(len(mword)):
 
             sandi = ""
-            punarchi = false
+            punarchi = False
 
 #            //1 - if it is verified already
             if (ottran[i][ 0] == 1):
@@ -279,17 +279,17 @@ def gpathil11(mword, opt, mode):
 
                 rgx = "[ா-்]"
                 if (re.match(rex,mword[i][-1])):
-                    ottran[i, 0] = 1
-                    parinthu[i, 1] = "correct"
-                    parinthu[i, 0] = 0
+                    ottran[i][0] = 1
+                    parinthu[i][1] = "correct"
+                    parinthu[i][0] = 0
                     continue
 
 
 #                //4.ignoring single vowel letters
             if (len(mword[i]) == 1):
-                ottran[i, 0] = 1
-                parinthu[i, 1] = "correct"
-                parinthu[i, 0] = 0
+                ottran[i][0] = 1
+                parinthu[i][1] = "correct"
+                parinthu[i][0] = 0
                 continue
 
 #                            //5- Typo Correction
@@ -388,7 +388,7 @@ def gpathil11(mword, opt, mode):
                     else:
                         parinthu[i][0] = len(b.split(','))
                     ottran[i][0] = 1
-                    
+
 
 
 
@@ -454,7 +454,7 @@ def gpathil11(mword, opt, mode):
 
                     cacheword.append(mword[i] + sandi)
                     cachesug.append(parinthu[i][1])
-                    
+
 
 
             #//13 - Check sandhi need or not needed should not cache
@@ -512,9 +512,12 @@ def gpathil11(mword, opt, mode):
 #We can use set instead of this function. Hence skipping this.
 #
 
+def getsample(b,c,a,d):
+    raise NotImplementedError() #TBD.
 
 def getsuggestion(c):  #//c is  mword[i]
     sug = {}
+    gword = db[0]["DB"][0]
     for j in gword.keys():
 #                    {//j gives every miswords
         a = j
