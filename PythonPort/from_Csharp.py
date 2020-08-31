@@ -614,5 +614,598 @@ def getsuggestion3(c, supl, n):
          return sug2
 
 
+        #get second level suggestion for given word
+        #public string[] getsuggestion2(string word)
+        def getsuggestion2(word):        
+            sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ];
+            sug = []            
+            limit = len(word)
+            for (h in range(0, limit)):            
+                sug1 = []
+                flag = False
+                for (i in range(0, len(sugword))):                
+                    poss = sugword[i].split(',')
+                    if (flag == False) :
+                        for ( j in range ( 0, len(poss) ) ):                        
+                            if (flag == false):                            
+                                 if ( len(word) >= len(poss[j])):                                 
+                                    if ( word[0 : len(poss[j])]  ) == poss[j ]):
+                                        word = word[len(poss[j]) : ]
+                                        sug1 = sug1 + combination(sug, poss)
+                                        flag = True
+                                        break                        
+            
+                if ( len(sug1) < 1):                
+                    if (len(word) > 0) :
+                        sug = combination(sug, [word[0:1]]
+                        word = word[1:]
+                else:                
+                    Array.Resize(ref sug, sug1.Length);
+                    Array.Copy(sug1, sug, sug1.Length);
+                    if (sug.Length > 1000):
+                        return new string[0];                   
+            
+            return sug
+        
+
+        def combination(word, sug):        
+            if ( len(word) == 0):
+                return sug
+
+            sug1 = []
+
+            for (i in sug ):
+                for (j in word) :
+                    sug1 = sug1.append( j + i )                             
+            
+            return sug1
+        
+
+        public string[] getsample(string code, string word, string fstr, string tstr)
+        {
+            //List<string> sample=new List<string>();
+            string[] sample = { };
+            //match will return கள since j is க[^ா-்]. capture return க. c1 will return match index or null
+            switch (code)
+            {
+
+                case "0":
+                    sample = sample.Concat(new[] { word.Replace(fstr, tstr) }).ToArray();
+                    MatchCollection matches = Regex.Matches(word, fstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    foreach (Match mat in matches)
+                    {
+                        GroupCollection groups = mat.Groups;
+                        string c1 = mat.Groups[0].Value;
+                        int count = mat.Groups[0].Index;
+                        sample = sample.Concat(new[] { word.Substring(0, count) + tstr + word.Substring(count + fstr.Length) }).ToArray();
+                    }
+                    break;
+
+                case "1"://should not be starting letter.should be end with perfect mei
+                    //ச->ச்
+                    MatchCollection cmatch1 = Regex.Matches(word, fstr + "([ா-்]|)", RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (cmatch1.Count > 0)
+                    {
+                        int incre = 0;//to calculate character different between fstr & tstr
+                        string a = word;
+                        foreach (Match mat in cmatch1)
+                        {
+                            GroupCollection groups = mat.Groups;
+                            string c1 = mat.Groups[0].Value; string c2 = mat.Groups[1].Value;
+                            int count = mat.Groups[0].Index;
+                            if (ismat(c2, count))
+                            {
+                                a = a.Substring(0, count + incre) + tstr + a.Substring(count + c1.Length + incre);//all replace
+                                incre += tstr.Length - c1.Length;
+                                sample = sample.Concat(new[] { word.Substring(0, count) + tstr + word.Substring(count + c1.Length) }).ToArray();
+                            }//eachone replace
+                        }
+                        sample = sample.Concat(new[] { a }).ToArray();
+                    }
+                    break;
+
+                case "2"://should not be starting letter
+                    MatchCollection cmatch2 = Regex.Matches(word, fstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (cmatch2.Count > 0)
+                    {
+                        int incre = 0;//to calculate character different between fstr & tstr
+                        string a = word;
+                        foreach (Match mat in cmatch2)
+                        {
+                            GroupCollection groups = mat.Groups;
+                            string c1 = mat.Groups[0].Value;//same as fstr
+                            int count = mat.Groups[0].Index;
+                            if (count > 0)
+                            {
+                                a = a.Substring(0, count + incre) + tstr + a.Substring(count + c1.Length + incre);//all replace
+                                incre += tstr.Length - c1.Length;
+                                sample = sample.Concat(new[] { word.Substring(0, count) + tstr + word.Substring(count + c1.Length) }).ToArray();
+                            }//eachone replace
+                        }
+                        sample = sample.Concat(new[] { a }).ToArray();
+                    }
+                    break;
+
+                case "3"://should only be last letter
+                    /* Match mcase3 = Regex.Match(word, fstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                     if (mcase3.Groups[0].Index == (word.Length - fstr.Length)) { sample = sample.Concat(new[] { word.Substring(0, word.Length - fstr.Length) + tstr }).ToArray(); }//when it match with first character
+                     break;*/
+                    string thala = word.Substring(0, word.Length - fstr.Length);
+                    if (word == thala + fstr) { sample = sample.Concat(new[] { thala + tstr }).ToArray(); }
+                    break;
+
+                case "9":
+                    //since it is dual check, handled before income.
+                    break;
+
+                case "4"://should only be first letter
+                    Match mcase4 = Regex.Match(word, fstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (mcase4.Groups[0].Index == 0) { sample = sample.Concat(new[] { tstr + word.Substring(fstr.Length) }).ToArray(); }//when it match with first character
+                    break;
+                case "5"://replace each one
+                    MatchCollection cmatch5 = Regex.Matches(word, fstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (cmatch5.Count > 0)
+                    {
+                        int incre = 0;//to calculate character different between fstr & tstr
+                        foreach (Match mat in cmatch5)
+                        {
+                            GroupCollection groups = mat.Groups;
+                            string c1 = mat.Groups[0].Value;//same as fstr
+                            int count = mat.Groups[0].Index;
+                            if ((count > 0) && (count < word.Length - 1))
+                            {
+                                incre += tstr.Length - c1.Length;
+                                sample = sample.Concat(new[] { word.Substring(0, count) + tstr + word.Substring(count + c1.Length) }).ToArray();
+                            }//eachone replace
+                        }
+                    }
+                    break;
+
+
+                case "101":
+                    //நரர்கள் -> நார்கள்
+                    MatchCollection matches0 = Regex.Matches(word, "[க-ஹ]ர([^ா-்]|)", RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (matches0.Count > 0)
+                    {
+                        string a = word;
+                        foreach (Match mat in matches0)
+                        {
+                            GroupCollection groups = mat.Groups;
+                            int count = mat.Groups[1].Index;// actual index of ர
+                            a = a.Substring(0, count - 1) + "ா" + a.Substring(count);//all replace
+                            sample = sample.Concat(new[] { word.Substring(0, count - 1) + "ா" + word.Substring(count) }).ToArray();
+                        }
+                        sample = sample.Concat(new[] { a }).ToArray();
+                    }
+                    break;
+                case "102"://for repeated scequence
+                    int diff = Convert.ToInt16(tstr);
+                    for (var i = 0; i < word.Length - (diff * 2); i++)
+                    {
+                        if (word.Substring(i, diff) == word.Substring(i + diff, diff))
+                        { sample = sample.Concat(new[] { word.Substring(0, i) + word.Substring(i + diff) }).ToArray(); }
+                    }
+                    break;
+
+                case "100":
+                    //ச->ச்
+                    MatchCollection matches2 = Regex.Matches(word, "[க-ஹ]([ா-்]|)", RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    if (matches2.Count > 0)
+                    {
+                        int incre = 0;//to calculate character different between fstr & tstr
+                        string a = word;
+                        foreach (Match mat in matches2)
+                        {
+                            GroupCollection groups = mat.Groups;
+                            string c1 = mat.Groups[0].Value;//return [க-ஹ]([ா-்]|)
+                            string c2 = mat.Groups[1].Value;//return ([ா-்]|)
+                            int count = mat.Groups[0].Index;
+                            if (ismat(c2, count))
+                            {
+                                a = a.Substring(0, count + incre) + c1 + tstr + a.Substring(count + c1.Length + incre);//all replace
+                                incre += tstr.Length - fstr.Length;
+                                sample = sample.Concat(new[] { word.Substring(0, count) + c1 + tstr + word.Substring(count + c1.Length) }).ToArray();
+                            }//each one replace
+                        }
+                        sample = sample.Concat(new[] { a }).ToArray();
+                    }
+
+
+                    //க்ச->கச் ottru post shifter 
+                    MatchCollection matches4 = Regex.Matches(word, "[க-ஹ]" + tstr + "[க-ஹ]([ா-்]|)", RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    foreach (Match mat in matches4)
+                    {
+                        GroupCollection groups = mat.Groups;
+                        string c1 = mat.Groups[0].Value;
+                        string c2 = mat.Groups[1].Value;
+                        int count = mat.Groups[0].Index;
+                        if (ismat(c2, count))
+                        {
+                            string a = word.Substring(0, count) + c1.Substring(0, 1) + c1.Substring(2, 1) + tstr + word.Substring(count + c1.Length);
+                            sample = sample.Concat(new[] { a }).ToArray();
+                        }
+                    }
+
+                    //கச்->க்ச ottru pre shifter படிபப்டியாக
+                    MatchCollection matches5 = Regex.Matches(word, "[க-ஹ]([ா-்]|)[க-ஹ]" + tstr, RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    foreach (Match mat in matches5)
+                    {
+                        GroupCollection groups = mat.Groups;
+                        string c1 = mat.Groups[0].Value;
+                        string c2 = mat.Groups[1].Value;
+                        int count = mat.Groups[0].Index;
+                        if (ismat(c2, count))
+                        {
+                            string a = word.Substring(0, count) + c1.Substring(0, 1) + tstr + c1.Substring(1, 1) + word.Substring(count + c1.Length);
+                            sample = sample.Concat(new[] { a }).ToArray();
+                        }
+                    }
+
+                    //ப்ட்ட->ப்டட் doubleottru post shifter
+                    MatchCollection matches6 = Regex.Matches(word, "[க-ஹ]" + tstr + "[க-ஹ]" + tstr + "[க-ஹ]([ா-்]|)", RegexOptions.IgnoreCase); // Here we check the Match instance.
+                    foreach (Match mat in matches6)
+                    {
+                        GroupCollection groups = mat.Groups;
+                        string c1 = mat.Groups[0].Value;
+                        string c2 = mat.Groups[1].Value;
+                        int count = mat.Groups[0].Index;
+                        if (ismat(c2, count))
+                        {
+                            string a = word.Substring(0, count) + c1.Substring(0, 3) + c1.Substring(4, 1) + tstr + word.Substring(count + c1.Length);
+                            sample = sample.Concat(new[] { a }).ToArray();
+                        }
+                    }
+
+                    //பட்ட்->ப்டட் doubleottru pre shifter-unused since pratically ottru pre shifter do this
+                    //word.replace(RegExp("[க-ஹ]([ா-்]|)[க-ஹ]"+tstr+"[க-ஹ]"+tstr, "gi"), function (c1,c2,count,word) {if(ismat(c2,count)){var a =word.substr(0,count)+c1.substr(0,1)+tstr+c1.substr(1,1)+c1.substr(3,2)+word.substr(count+c1.length);sample.push(a);}return ;});
+                    break;
+
+            }
+            return sample;
+        }
+        public bool ismat(string v1, int v2)
+        {
+            //v1 needs to be blank since reg needs no ா-் nearby
+            //v2 needs to be integer and not first letter
+            if ((v2 > 0) && (v1 == "")) { return true; }
+            else { return false; }
+        }
+#endregion
+
+
+#concating the suggestion alltogether to the suggestion of the wrong word
+#public dynamic addparinthu(dynamic parinthu, int i, string w)
+def addparinthu(parinthu, i, w):
+    #does it check value in string with comma
+    if (parinthu[i][1].find(w) < 0): #to avoid duplicate suggestion
+        #since unable to increase the array size
+        if (int( parinthu[i][0] ) > 0) : 
+            parinthu[i][0] = int(parinthu[i][0]) + 1
+            parinthu[i][1] = parinthu[i][1] + "," + w
+        else:
+            parinthu[i][0] = 1
+            parinthu[i][1] = w 
+
+    return parinthu
+
+def byproduct(varthai, suggest):
+    pass
+
+def checkword(sol, typ):
+    #  return true;
+    #output true or false
+    
+    #type = 0 -> any code
+    #type = 1 -> only peyar
+    #type = 2 -> only venai
+    #type = 3 -> peyar or venai
+    #type = 4 -> non deri(Z,Adjective,adverb,conjuction,int)
+    #type = 5 -> perfect noun without viku
+    #type = 6 ->
+    #type = 7 -> special used for suggestion check to avoid extensive derivatives
+    
+    sugges = 0 #zero = it is not suggestion word
+
+    if (typ == 7):    
+        sugges = 1    
+    
+    for  a in range(len(sol),0) :
+        #It cuts from end. end is best since small word has many derivation like ഊ        
+        paku = sol[0:a]
+        viku = sol[a:] #,sol.length
+        qcode = Oword[paku]
+        
+        if (qcode is not None) :
+            if (len(qcode) > 0) :
+                #foreach (dynamic b in qcode)
+                for( key, b in qcode):
+                    if (b["s"] != null) :
+                        return True #to save time for foreign words and misspelled words
+
+                    code = b["t"][0:1]
+                    subcode = b["t"][1:]
+
+                    if(typ == 0):
+                        break
+                    elif(typ == 1):
+                        if ( (peyar.find(code) == -1 or subcode != "15" ) and  speyar.find(code) == -1): 
+                            continue
+                    elif(typ == 2):
+                        if ( venai.find(code) == -1 or subcode != "15"):
+                            continue                        
+                    elif(typ == 3):
+                        if ( venai.find(code) == -1 and peyar.find(code) == -1 ) :
+                            continue                       
+                    elif(typ == 4):
+                        if (nonderi.find(code) == -1):
+                            continue                        
+                    elif(typ == 5):
+                        if ( peyar.find(code) != -1 and paku == sol and speyar.find(code) != -1 and code != "M") {
+                             return True
+                        else:
+                            return False                         
+                    elif(typ == 6):
+                        if (subcode != "15"):
+                            continue                   
+
+                    if (checkviku(paku, viku, "", code, subcode, sugges)):                    
+                        return True                  
+    
+    return False
+
+#third level suffix alanysis
+def splitviku(viku, cod, scod, sugges):
+    #used in verb and nouns with subcode 15
+    #input  கிறவர்கள், ஆ  
+    #input   ர்கள், H
+
+    #Logger.log(viku +", "+cod);
+    #if(viku=="0")viku="";
+    #for (int c = 1; c < viku.Length; c++) #starts from 1, zero given as last priority
+    for c in range(1, len(viku)):    
+        subpaku = viku[0:c]
+        subviku = viku[c:]
+        if (checkviku("", subpaku, subviku, cod, scod, sugges)):
+            return True
+
+    if (checkviku("", "", viku, cod, scod, sugges)): #similar effect of c=0 as it is needed to உலக-றிய
+        return True
+    
+    return False
+
+def codeuyir(part):
+    #part -> ெழுதினார்    
+    #//் is that okay?
+    if (len(part) < 1) :
+        return part #To avoid empty string
+
+    elu = ord(part[0:1])
+
+    if (part.Length > 1):    
+        for (key, d in auyir):
+            c = key
+            if (chr(elu) == c) :
+                return part.replace(c, chr(auyir[c]))             
+        
+
+        if ( (ord(elu) > 2965) && (ord(elu) < 2997)):            
+            return "அ" + part            
+
+    return part
+
+
+
+#second level suffix analysis
+def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode    
+    #input  "கொடு","க்கப்படுதல்","","த","15" ->looped again
+    #input  "","க்கப்பட","ுதல்","த","15" ->looped again
+    #input  "க்கப்பட","ுதல்","","இ","15"  ->passed
+    #output    true   or false
+
+    #நிகழ, ்ந்தமையால், , ர, 15
+    #/்ந்த, மையால், , ഉ, 15    
+
+    #to adjust null part as zero
+    #if(v==""){v="0";}//v needs to be blank in C#
+    #if(sv==""){sv="0";}
+    #don't adjust sv as 0
+    
+    #for வ family noun prefix starts
+    if (c == "അ"):    
+        if (sv != ""):
+            return False #this special should act as prefix, so no sv
+        secondword = p[-1] + v
+        sw = ""
+
+        if (secondword.Length > 2):        
+            sw = secondword
+            for (key, e in vauyir):            
+                d = key
+                #if (sw.Substring(0, 2) == d) { 
+                if ( sw[0 : 2] == d ) :
+                    sw = sw.replace(d, e)
+                    break
+                
+                if (sw[0:1] == "வ"):
+                    sw = "அ" + sw[1:]                
+        
+        if (checkword(sw, 1)):
+            return True 
+        elif (sw != secondword) :        
+            secondword = p[-1] + v
+            if (checkword(secondword, 1)):
+                return True #check the noun word
+        return False;
+    #for வ noun prefix end
+    
+
+    #for ய family noun prefix starts
+    if (c == "ആ"):    
+        if (sv != ""):
+            return False
+        secondword = p[-1] + v
+        sw = ""
+        if (secondword.Length > 2):
+            sw = secondword 
+            for (key, e in yauyir):
+                d = key; 
+                if (sw[0:2] == d):
+                    sw = sw.replace(d, e); 
+                    break
+            
+            if (sw[0:1] == "ய"):
+                sw = "அ" + sw[1:]        
+        
+        if (checkword(sw, 1)) :
+            return True
+        elif (sw != secondword) :
+            secondword = p[-1] + v; 
+            if (checkword(secondword, 1)):
+                return True            
+
+        return False    
+    #for ய family noun prefix end
+
+    #for consonant family noun prefix
+    if (c == "ഇ"):
+        if (sv != ""):
+            return False
+        
+        secondword = p[-1] + v; 
+
+        if (checkword(secondword, 1)):
+            return True
+        
+        return False
+
+    #for vowel family verb prefix starts
+    if (c == "ഉ"):        
+        if (sv != ""):
+            return False
+        secondword = codeuyir(v)         
+        if (checkword(secondword, 2)):
+            return True 
+        
+        return False    
+    
+    #check verb word
+    #for consonant family verb prefix starts
+    if (c == "ഊ"):
+        if (sv != ""):
+            return False
+        
+        secondword = p[-1] + v        
+        if (checkword(secondword, 2)):
+            return False 
+        
+        return False
+
+    #check verb word
+    #for noun & verb
+    if (c == "എ"):
+        if (sv != ""):
+            return False
+
+        secondword = p[-1] + v 
+        if (checkword(secondword, 6)):
+            return True
+        
+        return False
+
+    #special code should not move further as Eword[ഊ] is not available
+    #For nonderivatives Z family
+    if ( (v == "") and (nonderi.find(c) != -1)):
+        return True
+
+    blocks = ""
+
+    sc_values = {
+        "15" : "01234567",
+        "25" : "0123456",
+        "07" : "012345",
+        "10" : "01235",
+        "11" : "012356",
+        "09" : "02",
+        "06" : "023",
+        "05" : "013",
+        "04" : "03",
+        "03" : "13",
+        "02" : "2",
+        "01" : "1",
+        "16" : "3",
+        "17" : "0",
+        "08" : "4",
+        "18" : "4",
+        "19" : "5",
+        "20" : "6",
+        "21" : "7",
+        "24" : "34"    
+    }
+
+    blocks = sc_values[sc]    
+    
+    for(d in range(8)):    
+        if (blocks.find(d) == -1):
+            continue
+
+        if (Eword[c][d][v] is not None):
+            try:
+                if (derivative(Eword[c][d][v], v, sv, sugges)):
+                    return true
+            catch:
+                pass        
+
+
+    #C# need v as blank
+    if (sv == "") :
+        if (v != ""):
+            if (deri.find(c) != -1):
+                #to avoid adverb,adjective..
+                if (splitviku(v, c, sc, sugges))
+                    return true
+            
+    
+    return false;
+
+}
+
+
+#check wheather derivatives are possible for given root words
+def derivative(part, v, sv, sugges):
+    #① for extensive derivatives
+    #② for extensive derivatives excluded for suggestion
+    if (part is not None):    
+        if ((part.find("①") != -1) or ((part.find("②") != -1) and (sugges == 0))): #for extensive derivative
+        
+            #kudu = part.Substring(part.Length - 3, 1);//part.Length - 2
+            startIndex = len(part) - 3
+            endEndIndex =  startIndex + 1
+            kudu = part[startIndex:endEndIndex]
+            
+            #string elai = part.Substring(part.Length - 2);//part.Length
+            elai = part[-2:]
+
+            if (checkviku(v, sv, "", kudu, elai, sugges) == True):
+                return True
+
+            if (splitviku(sv, kudu, elai, sugges)):
+                return True #"க்கப்பட":"1இ" டுதலும் needs another split
+        
+
+        else: 
+            if (sv == ""):
+                return True #to return sucess if last part is blank
+
+    return False
+
+
+#validate and return true if given word is tamil
+def istamil(aword):
+    for a in aword:
+        if (ord(a) >= 2944 and ord(a) <= 3071):
+            return True
+    
+    return False
+
 gpathil11("நன்றி",'அஇஉ','ஈஈஊ')
 getsuggestion("அன்றி")
