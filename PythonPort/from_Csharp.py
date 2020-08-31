@@ -615,7 +615,6 @@ def getsuggestion3(c, supl, n):
 
 
         #get second level suggestion for given word
-        #public string[] getsuggestion2(string word)
         def getsuggestion2(word):        
             sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ];
             sug = []            
@@ -636,14 +635,13 @@ def getsuggestion3(c, supl, n):
                                         break                        
             
                 if ( len(sug1) < 1):                
-                    if (len(word) > 0) :
+                    if (len(word) > 0):
                         sug = combination(sug, [word[0:1]]
                         word = word[1:]
                 else:                
-                    Array.Resize(ref sug, sug1.Length);
-                    Array.Copy(sug1, sug, sug1.Length);
+                    sug = sug1.copy()
                     if (sug.Length > 1000):
-                        return new string[0];                   
+                        return [];                   
             
             return sug
         
@@ -863,13 +861,14 @@ def getsuggestion3(c, supl, n):
             }
             return sample;
         }
-        public bool ismat(string v1, int v2)
-        {
-            //v1 needs to be blank since reg needs no ா-் nearby
-            //v2 needs to be integer and not first letter
-            if ((v2 > 0) && (v1 == "")) { return true; }
-            else { return false; }
-        }
+
+        def ismat(v1, v2) :
+            #v1 needs to be blank since reg needs no ா-் nearby
+            #v2 needs to be integer and not first letter
+            if ( (v2 > 0) and (v1 == "")):
+                return True
+            else: 
+                return False
 #endregion
 
 
