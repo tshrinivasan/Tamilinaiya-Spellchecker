@@ -614,5 +614,395 @@ def getsuggestion3(c, supl, n):
          return sug2
 
 
+        #get second level suggestion for given word
+        def getsuggestion2(word):        
+            sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ];
+            sug = []            
+            limit = len(word)
+            for (h in range(0, limit)):            
+                sug1 = []
+                flag = False
+                for (i in range(0, len(sugword))):                
+                    poss = sugword[i].split(',')
+                    if (flag == False) :
+                        for ( j in range ( 0, len(poss) ) ):                        
+                            if (flag == false):                            
+                                 if ( len(word) >= len(poss[j])):                                 
+                                    if ( word[0 : len(poss[j])]  ) == poss[j ]):
+                                        word = word[len(poss[j]) : ]
+                                        sug1 = sug1 + combination(sug, poss)
+                                        flag = True
+                                        break                        
+            
+                if ( len(sug1) < 1):                
+                    if (len(word) > 0):
+                        sug = combination(sug, [word[0:1]]
+                        word = word[1:]
+                else:                
+                    sug = sug1.copy()
+                    if (sug.Length > 1000):
+                        return [];                   
+            
+            return sug
+        
+
+        def combination(word, sug):        
+            if ( len(word) == 0):
+                return sug
+
+            sug1 = []
+
+            for (i in sug ):
+                for (j in word) :
+                    sug1 = sug1.append( j + i )                             
+            
+            return sug1
+        
+
+        #---------getsample---------------------
+
+        def ismat(v1, v2) :
+            #v1 needs to be blank since reg needs no ா-் nearby
+            #v2 needs to be integer and not first letter
+            if ( (v2 > 0) and (v1 == "")):
+                return True
+            else: 
+                return False
+
+
+#concating the suggestion alltogether to the suggestion of the wrong word
+#public dynamic addparinthu(dynamic parinthu, int i, string w)
+def addparinthu(parinthu, i, w):
+    #does it check value in string with comma
+    if (parinthu[i][1].find(w) < 0): #to avoid duplicate suggestion
+        #since unable to increase the array size
+        if (int( parinthu[i][0] ) > 0) : 
+            parinthu[i][0] = int(parinthu[i][0]) + 1
+            parinthu[i][1] = parinthu[i][1] + "," + w
+        else:
+            parinthu[i][0] = 1
+            parinthu[i][1] = w 
+
+    return parinthu
+
+def byproduct(varthai, suggest):
+    pass
+
+def checkword(sol, typ):
+    #  return true;
+    #output true or false
+    
+    #type = 0 -> any code
+    #type = 1 -> only peyar
+    #type = 2 -> only venai
+    #type = 3 -> peyar or venai
+    #type = 4 -> non deri(Z,Adjective,adverb,conjuction,int)
+    #type = 5 -> perfect noun without viku
+    #type = 6 ->
+    #type = 7 -> special used for suggestion check to avoid extensive derivatives
+    
+    sugges = 0 #zero = it is not suggestion word
+
+    if (typ == 7):    
+        sugges = 1    
+    
+    for  a in range(len(sol),0) :
+        #It cuts from end. end is best since small word has many derivation like ഊ        
+        paku = sol[0:a]
+        viku = sol[a:] #,sol.length
+        qcode = Oword[paku]
+        
+        if (qcode is not None) :
+            if (len(qcode) > 0) :
+                #foreach (dynamic b in qcode)
+                for( key, b in qcode):
+                    if (b["s"] != null) :
+                        return True #to save time for foreign words and misspelled words
+
+                    code = b["t"][0:1]
+                    subcode = b["t"][1:]
+
+                    if(typ == 0):
+                        break
+                    elif(typ == 1):
+                        if ( (peyar.find(code) == -1 or subcode != "15" ) and  speyar.find(code) == -1): 
+                            continue
+                    elif(typ == 2):
+                        if ( venai.find(code) == -1 or subcode != "15"):
+                            continue                        
+                    elif(typ == 3):
+                        if ( venai.find(code) == -1 and peyar.find(code) == -1 ) :
+                            continue                       
+                    elif(typ == 4):
+                        if (nonderi.find(code) == -1):
+                            continue                        
+                    elif(typ == 5):
+                        if ( peyar.find(code) != -1 and paku == sol and speyar.find(code) != -1 and code != "M") {
+                             return True
+                        else:
+                            return False                         
+                    elif(typ == 6):
+                        if (subcode != "15"):
+                            continue                   
+
+                    if (checkviku(paku, viku, "", code, subcode, sugges)):                    
+                        return True                  
+    
+    return False
+
+#third level suffix alanysis
+def splitviku(viku, cod, scod, sugges):
+    #used in verb and nouns with subcode 15
+    #input  கிறவர்கள், ஆ  
+    #input   ர்கள், H
+
+    #Logger.log(viku +", "+cod);
+    #if(viku=="0")viku="";
+    #for (int c = 1; c < viku.Length; c++) #starts from 1, zero given as last priority
+    for c in range(1, len(viku)):    
+        subpaku = viku[0:c]
+        subviku = viku[c:]
+        if (checkviku("", subpaku, subviku, cod, scod, sugges)):
+            return True
+
+    if (checkviku("", "", viku, cod, scod, sugges)): #similar effect of c=0 as it is needed to உலக-றிய
+        return True
+    
+    return False
+
+def codeuyir(part):
+    #part -> ெழுதினார்    
+    #//் is that okay?
+    if (len(part) < 1) :
+        return part #To avoid empty string
+
+    elu = ord(part[0:1])
+
+    if (part.Length > 1):    
+        for (key, d in auyir):
+            c = key
+            if (chr(elu) == c) :
+                return part.replace(c, chr(auyir[c]))             
+        
+
+        if ( (ord(elu) > 2965) && (ord(elu) < 2997)):            
+            return "அ" + part            
+
+    return part
+
+
+
+#second level suffix analysis
+def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode    
+    #input  "கொடு","க்கப்படுதல்","","த","15" ->looped again
+    #input  "","க்கப்பட","ுதல்","த","15" ->looped again
+    #input  "க்கப்பட","ுதல்","","இ","15"  ->passed
+    #output    true   or false
+
+    #நிகழ, ்ந்தமையால், , ர, 15
+    #/்ந்த, மையால், , ഉ, 15    
+
+    #to adjust null part as zero
+    #if(v==""){v="0";}//v needs to be blank in C#
+    #if(sv==""){sv="0";}
+    #don't adjust sv as 0
+    
+    #for வ family noun prefix starts
+    if (c == "അ"):    
+        if (sv != ""):
+            return False #this special should act as prefix, so no sv
+        secondword = p[-1] + v
+        sw = ""
+
+        if (secondword.Length > 2):        
+            sw = secondword
+            for (key, e in vauyir):            
+                d = key
+                #if (sw.Substring(0, 2) == d) { 
+                if ( sw[0 : 2] == d ) :
+                    sw = sw.replace(d, e)
+                    break
+                
+                if (sw[0:1] == "வ"):
+                    sw = "அ" + sw[1:]                
+        
+        if (checkword(sw, 1)):
+            return True 
+        elif (sw != secondword) :        
+            secondword = p[-1] + v
+            if (checkword(secondword, 1)):
+                return True #check the noun word
+        return False;
+    #for வ noun prefix end
+    
+
+    #for ய family noun prefix starts
+    if (c == "ആ"):    
+        if (sv != ""):
+            return False
+        secondword = p[-1] + v
+        sw = ""
+        if (secondword.Length > 2):
+            sw = secondword 
+            for (key, e in yauyir):
+                d = key; 
+                if (sw[0:2] == d):
+                    sw = sw.replace(d, e); 
+                    break
+            
+            if (sw[0:1] == "ய"):
+                sw = "அ" + sw[1:]        
+        
+        if (checkword(sw, 1)) :
+            return True
+        elif (sw != secondword) :
+            secondword = p[-1] + v; 
+            if (checkword(secondword, 1)):
+                return True            
+
+        return False    
+    #for ய family noun prefix end
+
+    #for consonant family noun prefix
+    if (c == "ഇ"):
+        if (sv != ""):
+            return False
+        
+        secondword = p[-1] + v; 
+
+        if (checkword(secondword, 1)):
+            return True
+        
+        return False
+
+    #for vowel family verb prefix starts
+    if (c == "ഉ"):        
+        if (sv != ""):
+            return False
+        secondword = codeuyir(v)         
+        if (checkword(secondword, 2)):
+            return True 
+        
+        return False    
+    
+    #check verb word
+    #for consonant family verb prefix starts
+    if (c == "ഊ"):
+        if (sv != ""):
+            return False
+        
+        secondword = p[-1] + v        
+        if (checkword(secondword, 2)):
+            return False 
+        
+        return False
+
+    #check verb word
+    #for noun & verb
+    if (c == "എ"):
+        if (sv != ""):
+            return False
+
+        secondword = p[-1] + v 
+        if (checkword(secondword, 6)):
+            return True
+        
+        return False
+
+    #special code should not move further as Eword[ഊ] is not available
+    #For nonderivatives Z family
+    if ( (v == "") and (nonderi.find(c) != -1)):
+        return True
+
+    blocks = ""
+
+    sc_values = {
+        "15" : "01234567",
+        "25" : "0123456",
+        "07" : "012345",
+        "10" : "01235",
+        "11" : "012356",
+        "09" : "02",
+        "06" : "023",
+        "05" : "013",
+        "04" : "03",
+        "03" : "13",
+        "02" : "2",
+        "01" : "1",
+        "16" : "3",
+        "17" : "0",
+        "08" : "4",
+        "18" : "4",
+        "19" : "5",
+        "20" : "6",
+        "21" : "7",
+        "24" : "34"    
+    }
+
+    blocks = sc_values[sc]    
+    
+    for(d in range(8)):    
+        if (blocks.find(d) == -1):
+            continue
+
+        if (Eword[c][d][v] is not None):
+            try:
+                if (derivative(Eword[c][d][v], v, sv, sugges)):
+                    return true
+            catch:
+                pass        
+
+
+    #C# need v as blank
+    if (sv == "") :
+        if (v != ""):
+            if (deri.find(c) != -1):
+                #to avoid adverb,adjective..
+                if (splitviku(v, c, sc, sugges))
+                    return true
+            
+    
+    return false;
+
+}
+
+
+#check wheather derivatives are possible for given root words
+def derivative(part, v, sv, sugges):
+    #① for extensive derivatives
+    #② for extensive derivatives excluded for suggestion
+    if (part is not None):    
+        if ((part.find("①") != -1) or ((part.find("②") != -1) and (sugges == 0))): #for extensive derivative
+        
+            #kudu = part.Substring(part.Length - 3, 1);//part.Length - 2
+            startIndex = len(part) - 3
+            endEndIndex =  startIndex + 1
+            kudu = part[startIndex:endEndIndex]
+            
+            #string elai = part.Substring(part.Length - 2);//part.Length
+            elai = part[-2:]
+
+            if (checkviku(v, sv, "", kudu, elai, sugges) == True):
+                return True
+
+            if (splitviku(sv, kudu, elai, sugges)):
+                return True #"க்கப்பட":"1இ" டுதலும் needs another split
+        
+
+        else: 
+            if (sv == ""):
+                return True #to return sucess if last part is blank
+
+    return False
+
+
+#validate and return true if given word is tamil
+def istamil(aword):
+    for a in aword:
+        if (ord(a) >= 2944 and ord(a) <= 3071):
+            return True
+    
+    return False
+
 gpathil11("நன்றி",'அஇஉ','ஈஈஊ')
 getsuggestion("அன்றி")
