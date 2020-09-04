@@ -618,59 +618,59 @@ def getsuggestion3(c, supl, n):
 
 
         #get second level suggestion for given word
-        def getsuggestion2(word):        
-            sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ];
-            sug = []            
-            limit = len(word)
-            for (h in range(0, limit)):            
-                sug1 = []
-                flag = False
-                for (i in range(0, len(sugword))):                
-                    poss = sugword[i].split(',')
-                    if (flag == False) :
-                        for ( j in range ( 0, len(poss) ) ):                        
-                            if (flag == false):                            
-                                 if ( len(word) >= len(poss[j])):                                 
-                                    if ( word[0 : len(poss[j])]  ) == poss[j ]):
-                                        word = word[len(poss[j]) : ]
-                                        sug1 = sug1 + combination(sug, poss)
-                                        flag = True
-                                        break                        
+def getsuggestion2(word):
+    sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ]
+    sug = []
+    limit = len(word)
+    for (h in range(0, limit)):
+        sug1 = []
+        flag = False
+        for (i in range(0, len(sugword))):
+            poss = sugword[i].split(',')
+            if (flag == False):
+                for ( j in range ( 0, len(poss) ) ):
+                    if (flag == false):
+                        if ( len(word) >= len(poss[j])):
+                            if ( word[0 : len(poss[j])]  ) == poss[j ]):
+                                word = word[len(poss[j]) : ]
+                                sug1 = sug1 + combination(sug, poss)
+                                flag = True
+                                break
             
-                if ( len(sug1) < 1):                
-                    if (len(word) > 0):
-                        sug = combination(sug, [word[0:1]]
-                        word = word[1:]
-                else:                
-                    sug = sug1.copy()
-                    if (sug.Length > 1000):
-                        return [];                   
+        if ( len(sug1) < 1):
+            if (len(word) > 0):
+                sug = combination(sug, [word[0:1]]
+                word = word[1:]
+        else:
+            sug = sug1.copy()
+            if (sug.Length > 1000):
+                return [];
             
-            return sug
+    return sug
         
 
-        def combination(word, sug):        
-            if ( len(word) == 0):
-                return sug
+def combination(word, sug):
+    if ( len(word) == 0):
+        return sug
 
-            sug1 = []
+    sug1 = []
 
-            for (i in sug ):
-                for (j in word) :
-                    sug1 = sug1.append( j + i )                             
+    for (i in sug ):
+        for (j in word) :
+            sug1 = sug1.append( j + i )
             
-            return sug1
+    return sug1
         
 
         #---------getsample---------------------
 
-        def ismat(v1, v2) :
+def ismat(v1, v2) :
             #v1 needs to be blank since reg needs no ா-் nearby
             #v2 needs to be integer and not first letter
-            if ( (v2 > 0) and (v1 == "")):
-                return True
-            else: 
-                return False
+    if ( (v2 > 0) and (v1 == "")):
+        return True
+    else:
+        return False
 
 
 #concating the suggestion alltogether to the suggestion of the wrong word
