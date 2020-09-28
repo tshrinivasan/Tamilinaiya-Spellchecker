@@ -10,17 +10,14 @@ peyar = "MLTYWNEIQOGDHVXBPSളവ"
 speyar = "CAJ"
 venai = "ஆலனசளணஇழஉஓடதदधபநमயரறवउपकतईटरलळएचज"
 nonderi = "Z"
-
-
-def Vaani():
-    deri = peyar + speyar + venai + "FUKഡഗജദപ"
+deri = peyar + speyar + venai + "FUKഡഗജദപ"
 
 
 cacheword = []
 cachesug = []
 
 def refreshcache(nword):
-    found = cacheword.find(nword)
+    found = cacheword.index(nword)
     cachesug[found] = "correct"
 
 
@@ -29,9 +26,20 @@ with open('db.lint.valid.json',encoding='utf-8-sig') as json_file:
 
 
 #print(db[0]['DB'][3])
+Oword = db[0]["DB"][4] #//Words
+Eword = db[0]["DB"][3]
+tranrule = db[0]["DB"][2]
+tword = db[0]["DB"][1]   # substiture english words to tamil words
+gword = db[0]["DB"][0]
 
+#        // string[] sandhi = { "க", "ச", "த", "ப" };
+vauyir_json = "{\"வா\":\"ஆ\",\"வி\":\"இ\",\"வீ\":\"ஈ\",\"வு\":\"உ\",\"வூ\":\"ஊ\",\"வெ\":\"எ\",\"வே\":\"ஏ\",\"வை\":\"ஐ\",\"வொ\":\"ஒ\",\"வோ\":\"ஓ\",\"வௌ\":\"ஒள\"}"  #//\"வ\":\"அ\",
+yauyir_json = "{\"யா\":\"ஆ\",\"யி\":\"இ\",\"யீ\":\"ஈ\",\"யு\":\"உ\",\"யூ\":\"ஊ\",\"யெ\":\"எ\",\"யே\":\"ஏ\",\"யை\":\"ஐ\",\"யொ\":\"ஒ\",\"யோ\":\"ஓ\",\"யௌ\":\"ஒள\"}" #);// \"ய\":\"அ\",
+auyir_json = "{\"ா\":\"ஆ\",\"ி\":\"இ\",\"ீ\":\"ஈ\",\"ு\":\"உ\",\"ூ\":\"ஊ\",\"ெ\":\"எ\",\"ே\":\"ஏ\",\"ை\":\"ஐ\",\"ொ\":\"ஒ\",\"ோ\":\"ஓ\",\"ௌ\":\"ஒள\"}"
 
-
+vauyir = json.loads(vauyir_json)
+yauyir = json.loads(yauyir_json)
+auyir = json.loads(auyir_json)
 
 def getviku(v,c,sc):
     blocks = ""
@@ -139,7 +147,7 @@ def getviku(v,c,sc):
                     elif (subviku == ""):
                         return part
 
-    return false
+    return False
 
 
 #uncomplete
@@ -150,10 +158,6 @@ def getviku(v,c,sc):
 def checkroot(word):
 
     outp = word.split(',')
-    Oword = db[0]["DB"][4] #//Words
-
-#    print(Oword)
-    Eword = db[0]["DB"][3] #//family
 
     #rule = JsonConvert.DeserializeObject("{\"M\":\"ம்\",\"L\":\"ு\",\"T\":\"ு\",\"Y\":\"\",\"W\":\"\",\"N\":\"\",\"E\":\"\",\"I\":\"ல்\",\"Q\":\"ள்\",\"ള\":\"ள்\",\"O\":\"்\",\"P\":\"்\",\"S\":\"்\",\"V\":\"ு\",\"വ\":\"ு\",\"ഗ\":\"\",\"ഡ\":\"\",\"ജ\":\"\",\"ദ\":\"\",\"പ\":\"\",\"B\":\"ை\",\"G\":\"ர்\",\"D\":\"ர்\",\"X\":\"ர்\",\"H\":\"ர்\",\"ஆ\":\"தல்\",\"ல\":\"ல்தல்\",\"ன\":\"ல்தல்\",\"ச\":\"்லுதல் \",\"ள\":\"ள்தல்\",\"ண\":\"ள்ளுதல்\",\"இ\":\"ுதல்\",\"ழ\":\"ுதல்\",\"உ\":\"தல்\",\"ஓ\":\"தல்\",\"ட\":\"ுதல்\",\"த\":\"த்தல்\",\"द\":\"த்தல்\",\"ध\":\"த்தல்\",\"ப\":\"்த்தல்\",\"ந\":\"த்தல்\",\"म\":\"த்தல்\",\"ய\":\"தல்\",\"ர\":\"்தல்\",\"ற\":\"ுதல்\",\"व\":\"ாதல்\",\"उ\":\"ணுதல்\",\"प\":\"்ணுதல்\",\"क\":\"ாண்ணுதல்\",\"त\":\"னுதல்\",\"ई\":\"்னுதல்\",\"ट\":\"ள்தல்\",\"र\":\"ல்தல்\",\"ल\":\"ல்தல்\",\"ळ\":\"ுதல்\",\"ए\":\"றுதல்\",\"च\":\"தல் \",\"ज\":\"ேகுதல்\"}");
     rule_json = "{\"M\":\"ம்\",\"L\":\"ு\",\"T\":\"ு\",\"Y\":\"\",\"W\":\"\",\"N\":\"\",\"E\":\"\",\"I\":\"ல்\",\"Q\":\"ள்\",\"ള\":\"ள்\",\"O\":\"்\",\"P\":\"்\",\"S\":\"்\",\"V\":\"ு\",\"വ\":\"ு\",\"ഗ\":\"\",\"ഡ\":\"\",\"ജ\":\"\",\"ദ\":\"\",\"പ\":\"\",\"B\":\"ை\",\"G\":\"ர்\",\"D\":\"ர்\",\"X\":\"ர்\",\"H\":\"ர்\",\"ஆ\":\"தல்\",\"ல\":\"ல்தல்\",\"ன\":\"ல்தல்\",\"ச\":\"்லுதல் \",\"ள\":\"ள்தல்\",\"ண\":\"ள்ளுதல்\",\"இ\":\"ுதல்\",\"ழ\":\"ுதல்\",\"உ\":\"தல்\",\"ஓ\":\"தல்\",\"ட\":\"ுதல்\",\"த\":\"த்தல்\",\"द\":\"த்தல்\",\"ध\":\"த்தல்\",\"ப\":\"்த்தல்\",\"ந\":\"த்தல்\",\"म\":\"த்தல்\",\"ய\":\"தல்\",\"ர\":\"்தல்\",\"ற\":\"ுதல்\",\"व\":\"ாதல்\",\"उ\":\"ணுதல்\",\"प\":\"்ணுதல்\",\"क\":\"ாண்ணுதல்\",\"त\":\"னுதல்\",\"ई\":\"்னுதல்\",\"ट\":\"ள்தல்\",\"र\":\"ல்தல்\",\"ल\":\"ல்தல்\",\"ळ\":\"ுதல்\",\"ए\":\"றுதல்\",\"च\":\"தல் \",\"ज\":\"ேகுதல்\"}"
@@ -213,298 +217,289 @@ def tranlate(code):
     else:
         return ""
 
-print(tranlate("㚱"))
+#print(tranlate("㚱"))
 
 
 
 
 
 def gpathil11(mword, opt, mode):
+    #print("gpathil11" + mword[0] )
+    if os.path.exists("koppu/user.txt"):
+        userfile = open("koppu/user.txt",'r').readlines()
+        userOword = userfile[0].split(',')
+        usergword = userfile[1].split(',')
+    else:
+        userOword = ""
+        usergword = ""
 
-        Oword = db[0]["DB"][4] #//Words
-        Eword = db[0]["DB"][3]
-        tranrule = db[0]["DB"][2]
-        tword = db[0]["DB"][1]   # substiture english words to tamil words
-        gword = db[0]["DB"][0]
+    splitchar = ','
 
-
-        if os.path.exists("koppu/user.txt"):
-            userfile = open("koppu/user.txt",'r').readlines()
-            userOword = userfile[0].split(',')
-            usergword = userfile[1].split(',')
-        else:
-            userOword = ""
-            usergword = ""
-
-        splitchar = ','
-
-#        // string[] sandhi = { "க", "ச", "த", "ப" };
-        vauyir_json = "{\"வா\":\"ஆ\",\"வி\":\"இ\",\"வீ\":\"ஈ\",\"வு\":\"உ\",\"வூ\":\"ஊ\",\"வெ\":\"எ\",\"வே\":\"ஏ\",\"வை\":\"ஐ\",\"வொ\":\"ஒ\",\"வோ\":\"ஓ\",\"வௌ\":\"ஒள\"}"  #//\"வ\":\"அ\",
-        yauyir_json = "{\"யா\":\"ஆ\",\"யி\":\"இ\",\"யீ\":\"ஈ\",\"யு\":\"உ\",\"யூ\":\"ஊ\",\"யெ\":\"எ\",\"யே\":\"ஏ\",\"யை\":\"ஐ\",\"யொ\":\"ஒ\",\"யோ\":\"ஓ\",\"யௌ\":\"ஒள\"}" #);// \"ய\":\"அ\",
-        auyir_json = "{\"ா\":\"ஆ\",\"ி\":\"இ\",\"ீ\":\"ஈ\",\"ு\":\"உ\",\"ூ\":\"ஊ\",\"ெ\":\"எ\",\"ே\":\"ஏ\",\"ை\":\"ஐ\",\"ொ\":\"ஒ\",\"ோ\":\"ஓ\",\"ௌ\":\"ஒள\"}"
-
-        vauyir = json.loads(vauyir_json)
-        yauyir = json.loads(yauyir_json)
-        auyir = json.loads(auyir_json)
-
-        parinthu = [[None,None] for i in range(len(mword))]
-        ottran = [[None,None] for i in range(len(mword))]
+    parinthu = [[None,None] for i in range(len(mword))]
+    ottran = [[None,None] for i in range(len(mword))]
 
 
-        for i in range(len(mword)):
-            parinthu[i][ 0] = 0 #;//count of suggestion
-            parinthu[i][ 1] = "wrong" #;//suggestions
-            ottran[i][ 0] = 0
-            ottran[i][1] = 1
+    for i in range(len(mword)):
+        parinthu[i][ 0] = 0 #;//count of suggestion
+        parinthu[i][ 1] = "wrong" #;//suggestions
+        ottran[i][ 0] = 0
+        ottran[i][1] = 1
 
-        for i in range(len(mword)):
+    for i in range(len(mword)):
 
-            sandi = ""
-            punarchi = False
+        sandi = ""
+        punarchi = False
 
 #            //1 - if it is verified already
-            if (ottran[i][ 0] == 1):
-                continue
+        if (ottran[i][ 0] == 1):
+            continue
 
 #            //2 - removing blank char
-            if (len(mword[i]) < 1):
-                parinthu[i, 0] = -1
-                parinthu[i, 1] = ""
-                continue
+        if (len(mword[i]) < 1):
+            parinthu[i, 0] = -1
+            parinthu[i, 1] = ""
+            continue
 
 #           //3.ignoring single consonant letters
 
 
-            if (len(mword[i]) == 2):
+        if (len(mword[i]) == 2):
 
-                rgx = "[ா-்]"
-                if (re.match(rex,mword[i][-1])):
-                    ottran[i][0] = 1
-                    parinthu[i][1] = "correct"
-                    parinthu[i][0] = 0
-                    continue
-
-
-#                //4.ignoring single vowel letters
-            if (len(mword[i]) == 1):
+            rgx = "[ா-்]"
+            if (re.match(rgx,mword[i][-1])):
                 ottran[i][0] = 1
                 parinthu[i][1] = "correct"
                 parinthu[i][0] = 0
                 continue
 
+
+#                //4.ignoring single vowel letters
+        if (len(mword[i]) == 1):
+            ottran[i][0] = 1
+            parinthu[i][1] = "correct"
+            parinthu[i][0] = 0
+            continue
+
 #                            //5- Typo Correction
-                mword[i] = mword[i].replace("ொ", "ொ")
-                mword[i] = mword[i].replace("ோ", "ோ")
+            mword[i] = mword[i].replace("ொ", "ொ")
+            mword[i] = mword[i].replace("ோ", "ோ")
 
 
 
 #                //6 - Translation
-            if (opt == true):
-                if (ottran[i][ 0] == 0):
-                    istrans = false
+        if (opt == True):
+            if (ottran[i][ 0] == 0):
+                istrans = False
 
-                    for key in tword.keys():
-                        tname = key
-                        if tname in mword[i]:
-                            if (len(tword[tname]) > 0):
-                                for k in tword[tname]:
+                for key in tword.keys():
+                    tname = key
+                    if tname in mword[i]:
+                        if (len(tword[tname]) > 0):
+                            for k in tword[tname]:
 #                                          {//k is array of suggestions
-                                    a = str(k['t'])
-                                    b = str(k['w'])
+                                a = str(k['t'])
+                                b = str(k['w'])
 
-                                    for l in tranrule[a]:
-                                        map = str(l['t']).split(',')
+                                for l in tranrule[a]:
+                                    map = str(l['t']).split(',')
 
-                                        if  (tname + map[0]) in mword[i]:
+                                    if  (tname + map[0]) in mword[i]:
 
-                                            nword = mword[i].replace(tname + map[0], b + map[1])
+                                        nword = mword[i].replace(tname + map[0], b + map[1])
 
-                                            if (checkword(nword, 0)):
-                                                addparinthu(parinthu, i, nword)
-                                                istrans = true
+                                        if (checkword(nword, 0)):
+                                            addparinthu(parinthu, i, nword)
+                                            istrans = True
 
-                    if (istrans == true):
-                        ottran[i, 0] = 1
+                if (istrans == True):
+                    ottran[i, 0] = 1
 
 
 
-   #             //7.sandhi remover and sandi/punarchi memory
-            if ((i + 2) < len(mword)):
-                if (len(mword[i + 2]) > 0):
-                    ottru = mword[i][(len(mword[i]) - 2):]
-                    methi = mword[i][0:len(mword[i]) - 2]
-                    muthal = mword[i + 2][0: 1]
+#             //7.sandhi remover and sandi/punarchi memory
+        if ((i + 2) < len(mword)):
+            if (len(mword[i + 2]) > 0):
+                ottru = mword[i][(len(mword[i]) - 2):]
+                methi = mword[i][0:len(mword[i]) - 2]
+                muthal = mword[i + 2][0: 1]
 
-                    rgx1 = "[கசதப]்"
-                    rgx2 = "[கசதப]"
+                rgx1 = "[கசதப]்"
+                rgx2 = "[கசதப]"
 
-                    if re.match(rgx1,ottru):
-                        if (muthal + "்" == ottru):
-                            mword[i] = methi
-                            sandi = ottru;
+                if re.match(rgx1,ottru):
+                    if (muthal + "்" == ottru):
+                        mword[i] = methi
+                        sandi = ottru
 
-                    elif ottru == "ட்":
-                        if re.match(rgx2,muthal):
-                             mword[i] = methi + "ள்"
-                             punarchi = true
+                elif ottru == "ட்":
+                    if re.match(rgx2,muthal):
+                            mword[i] = methi + "ள்"
+                            punarchi = True
 
-                    elif ottru == "ற்":
-                        if re.match(rgx2,muthal):
-                             mword[i] = methi + "ல்"
-                             punarchi = true
+                elif ottru == "ற்":
+                    if re.match(rgx2,muthal):
+                            mword[i] = methi + "ல்"
+                            punarchi = True
 
-                    elif ottru == "ங்":
-                        if muthal == "க":
-                            mword[i] = methi + "ம்"
-                            sandi = "ங்"
-                            punarchi = true
+                elif ottru == "ங்":
+                    if muthal == "க":
+                        mword[i] = methi + "ம்"
+                        sandi = "ங்"
+                        punarchi = True
 
-                    elif ottru == "ஞ்":
-                        if muthal == "ச":
-                            mword[i] = methi + "ம்"
-                            sandi = "ஞ்"
-                            punarchi = true
+                elif ottru == "ஞ்":
+                    if muthal == "ச":
+                        mword[i] = methi + "ம்"
+                        sandi = "ஞ்"
+                        punarchi = True
 
-                    elif ottru == "ந்":
-                        if muthal == "த":
-                            mword[i] = methi + "ம்"
-                            sandi = "ந்"
-                            punarchi = true
+                elif ottru == "ந்":
+                    if muthal == "த":
+                        mword[i] = methi + "ம்"
+                        sandi = "ந்"
+                        punarchi = True
 
 
 #           o     //8. skip if it is repeated word
-            found = cacheword.find(mword[i] + sandi)
+        if (mword[i] + sandi) in cacheword:
+            found = cacheword.index(mword[i] + sandi)
+        else:
+            found = -1
 
-            if found > -1:
-                a = cacheword[found]
-                if (a == mword[i] + sandi):
-                    b = cachesug[found]
-                    parinthu[i][1] = b
+        if found > -1:
+            a = cacheword[found]
+            if (a == mword[i] + sandi):
+                b = cachesug[found]
+                parinthu[i][1] = b
 
-                    if not istamil(b):
-                        parinthu[i][0] = 0
-                    elif b.find(',') < 0:
-                        parinthu[i][0] = 1
-                    else:
-                        parinthu[i][0] = len(b.split(','))
-                    ottran[i][0] = 1
+                if not istamil(b):
+                    parinthu[i][0] = 0
+                elif b.find(',') < 0:
+                    parinthu[i][0] = 1
+                else:
+                    parinthu[i][0] = len(b.split(','))
+                ottran[i][0] = 1
 
 
 
 
 #            //9 - skip if was userpreferance
-            if (ottran[i][0] == 0):
-                for a in userOword:
-                    if (a == str(mword[i])):
-                        ottran[i][ 0] = 1
-                        parinthu[i][1] = "correct"
-                        parinthu[i][0] = 0
+        if (ottran[i][0] == 0):
+            for a in userOword:
+                if (a == str(mword[i])):
+                    ottran[i][ 0] = 1
+                    parinthu[i][1] = "correct"
+                    parinthu[i][0] = 0
 
-            if (ottran[i][0] == 0):
-                for a in usergword:
-                    nword = a.split('|')
+        if (ottran[i][0] == 0):
+            for a in usergword:
+                nword = a.split('|')
 
-                    if (nword[0] == str(mword[i])):
-                        parinthu = addparinthu(parinthu, i, nword[1])
+                if (nword[0] == str(mword[i])):
+                    parinthu = addparinthu(parinthu, i, nword[1])
 
 
 #                //10 - word match
-            if (ottran[i][0] == 0):
-                if (checkword(mword[i], 0)):
-                    ottran[i][0] = 1
-                    parinthu[i][1] = "correct"
-                    parinthu[i][0] = 0
+        if (ottran[i][0] == 0):
+            if (checkword(mword[i], 0)):
+                ottran[i][0] = 1
+                parinthu[i][1] = "correct"
+                parinthu[i][0] = 0
 
 
 
 #                                    //11 - gword suggestion
-            if (opt == true):
-                if (ottran[i][0] == 0):
-                    sample = getsuggestion(mword[i])
-                    emp = {}
-                    sample2 = getsuggestion2(mword[i])
-                    sample = list(sample + sample2)
-                    usample = set(sample)
+        if (opt == True):
+            if (ottran[i][0] == 0):
+                sample = getsuggestion(mword[i])
+                emp = {}
+                sample2 = getsuggestion2(mword[i])
+                for x in list(sample.values()):
+                    sample2.append(x)
+                usample = set(sample2)
+#                print(usample)
 
-                    for l in usample:
-                        nword = 1
-                        if (checkword(nword, 7)):
-                            if (punarchi):
-                                ottru = nword[len(nword) - 2]
-                                methi = nword[0, len(nword) - 2]
+                for l in usample:
+                    nword = l
+                    if (checkword(nword, 7)):
+                        #print('nword' + ' ' + nword)
+                        if (punarchi):
+                            ottru = nword[len(nword) - 2]
+                            methi = nword[0, len(nword) - 2]
 
-                                if (ottru == "ள்"):
-                                    addparinthu(parinthu, i, methi + "ட்")
-                                elif (ottru == "ல்"):
-                                    addparinthu(parinthu, i, methi + "ற்")
-                                elif ottru == "ம்":
-                                    addparinthu(parinthu, i, methi + sandi)
+                            if (ottru == "ள்"):
+                                addparinthu(parinthu, i, methi + "ட்")
+                            elif (ottru == "ல்"):
+                                addparinthu(parinthu, i, methi + "ற்")
+                            elif ottru == "ம்":
+                                addparinthu(parinthu, i, methi + sandi)
 
-                            else:
-                                parinthu = addparinthu(parinthu, i, nword + sandi)
+                        else:
+                            parinthu = addparinthu(parinthu, i, nword + sandi)
 
 
 
 
 
 #                //12 cache the search
-            if (len(mword[i]) > 0):
+        if (len(mword[i]) > 0):
 
-                if not (mword[i] + sandi) in cacheword:
+            if not (mword[i] + sandi) in cacheword:
 
-                    cacheword.append(mword[i] + sandi)
-                    cachesug.append(parinthu[i][1])
+                cacheword.append(mword[i] + sandi)
+                cachesug.append(parinthu[i][1])
 
 
 
-            #//13 - Check sandhi need or not needed should not cache
-            if (ottran[i],[0] == 1): #//if this word is correct
-                if (len(mword) > i + 2):
-                    if (len(mword[i + 2]) > 1):
-                        chandi = mword[i + 2][0: 1] + "்"  #;//if user did give chandi
-                        rgx1 = "[கசதப]்"
+        #//13 - Check sandhi need or not needed should not cache
+        if (ottran[i],[0] == 1): #//if this word is correct
+            if (len(mword) > i + 2):
+                if (len(mword[i + 2]) > 1):
+                    chandi = mword[i + 2][0: 1] + "்"  #;//if user did give chandi
+                    rgx1 = "[கசதப]்"
 
-                        if re.match(rgx1,chandi) : # ) //if next word is kachathapa
-                            if (checkword(mword[i + 2], 0)):
-                                ottran[i + 2][0] = 1
-                                parinthu[i + 2][1] = "correct"
-                                parinthu[i + 2][0] = 0
+                    if re.match(rgx1,chandi) : # ) //if next word is kachathapa
+                        if (checkword(mword[i + 2], 0)):
+                            ottran[i + 2][0] = 1
+                            parinthu[i + 2][1] = "correct"
+                            parinthu[i + 2][0] = 0
 
-                            if (ottran[i + 2][0] == 1): #//if next word is correct
-                                combo = checkword(mword[i] + mword[i + 2], 0)
-                                thibo = checkword(mword[i] + chandi + mword[i + 2], 0)
-                                derive = checkword(mword[i], 5)  # ;//return true if it is valid perfect noun
+                        if (ottran[i + 2][0] == 1): #//if next word is correct
+                            combo = checkword(mword[i] + mword[i + 2], 0)
+                            thibo = checkword(mword[i] + chandi + mword[i + 2], 0)
+                            derive = checkword(mword[i], 5)  # ;//return true if it is valid perfect noun
 
-                                if (sandi != ""):
+                            if (sandi != ""):
 
-                                    if combo:
-                                        if not thibo:
-                                            parinthu = addparinthu(parinthu, i, mword[i])
-                                else:
-                                    if thibo:
-                                        if not combo:
-                                            if not derive:
-                                                parinthu = addparinthu(parinthu, i, mword[i] + chandi)
+                                if combo:
+                                    if not thibo:
+                                        parinthu = addparinthu(parinthu, i, mword[i])
+                            else:
+                                if thibo:
+                                    if not combo:
+                                        if not derive:
+                                            parinthu = addparinthu(parinthu, i, mword[i] + chandi)
 
 # 14 commented in source itself
 #            //14 - for Developer Sheet research
 #            if (ottran[i][0] == 0):
 #                if (parinthu[i][0] > 0):
 #                    //byproduct(mword[i], parinthu[i].join(","));
+#    print(parinthu)
 
-
-        if mode=="web":
-            z = ":"
-            Arr = ""
-            for i in parinthu:  #//foreach can't be used, since dynamic(multi dimension) will return all units and no increments are not accepted
-                Arr = Arr + str(i) + z
-                if (z == ":"):
-                    z = "|"
-                else:
-                    z = ":"
-            return Arr[0: len(Arr) - 1]
-        else:
-            return parinthu
+    if mode=="web":
+        z = ":"
+        Arr = ""
+        for i in parinthu:  #//foreach can't be used, since dynamic(multi dimension) will return all units and no increments are not accepted
+            Arr = Arr + str(i) + z
+            if (z == ":"):
+                z = "|"
+            else:
+                z = ":"
+        return Arr[0: len(Arr) - 1]
+    else:
+        print(parinthu)
+        return parinthu
 
 
 # def RemoveDuplicates(s):
@@ -512,10 +507,11 @@ def gpathil11(mword, opt, mode):
 #We can use set instead of this function. Hence skipping this.
 #
 
-def getsample(b,c,a,d):
-    raise NotImplementedError() #TBD.
+#def getsample(b,c,a,d):
+#    raise NotImplementedError() #TBD.
 
 def getsuggestion(c):  #//c is  mword[i]
+    #print("getsuggestion" + " " + c)
     sug = {}
     gword = db[0]["DB"][0]
     for j in gword.keys():
@@ -542,19 +538,20 @@ def getsuggestion(c):  #//c is  mword[i]
                                 sug1[l] = sug1[l].replace("s", d)
                                 return sug1
 
-                    else:
-                        sug = list(sug + (getsample(b, c, a, d)))
+#                    else:
+#                        sug = list(sug + (getsample(b, c, a, d)))
 
 
 
-    sug = list(sug + getsample("100", c, "", "்")) # //special logics for ்
-    sug = list(sug + getsample("100", c, "", "ா")) # .ToArray();//special logics for ா
-    sug = list(sug + getsample("100", c, "", "ி")) # .ToArray();//special logic ி
-    sug = list(sug + getsample("100", c, "", "ை")) # .ToArray();//special logic ை
-    sug = list(sug + getsample("101", c, "", "")) # .ToArray();//special logics for ர-ா
-    sug = list(sug + getsample("102", c, "", "1")) #.ToArray();
-    sug = list(sug + getsample("102", c, "", "2")) #.ToArray();
-    sug = list(sug + getsample("102", c, "", "3")) #.ToArray();
+#    sug = list(sug + getsample("100", c, "", "்")) # //special logics for ்
+#    sug = list(sug + getsample("100", c, "", "ா")) # .ToArray();//special logics for ா
+#    sug = list(sug + getsample("100", c, "", "ி")) # .ToArray();//special logic ி
+#    sug = list(sug + getsample("100", c, "", "ை")) # .ToArray();//special logic ை
+#    sug = list(sug + getsample("101", c, "", "")) # .ToArray();//special logics for ர-ா
+#    sug = list(sug + getsample("102", c, "", "1")) #.ToArray();
+#    sug = list(sug + getsample("102", c, "", "2")) #.ToArray();
+#    sug = list(sug + getsample("102", c, "", "3")) #.ToArray();
+    #print(sug)        
     return sug
 
 
@@ -574,7 +571,7 @@ def getsuggestion3(c, supl, n):
             for j in supword.keys():
                 a = j
                 if a in c:
-                    jsonString = jsonString + ",\"" + a + "\":" + json.dumps(supgword[a]) #//suplist[j]=supgword[j];
+                    jsonString = jsonString + ",\"" + a + "\":" + json.dumps(supword[a]) #//suplist[j]=supgword[j];
 
             jsonString = "{" + jsonString[1:] + "}" #;//placing comma at begginging
 
@@ -593,10 +590,10 @@ def getsuggestion3(c, supl, n):
                  d = k['w']
                  p = "p" + str(n)
 
-                 getsamplec2 = getsample(b, c, a, p)
+#                 getsamplec2 = getsample(b, c, a, p)
 
-                 c2 = list(c2 + getsamplec2)
-
+#                 c2 = list(c2 + getsamplec2)
+                 c2 = list(c2)
                  suplist2 = json.loads(json.dumps(suplist)) #;//to avoid original json change
 
                  suplist2.remove(a) #YTD Have to find the relevant remove method for python
@@ -619,19 +616,20 @@ def getsuggestion3(c, supl, n):
 
         #get second level suggestion for given word
 def getsuggestion2(word):
+    #print("getsuggestion2" + " " + word)
     sugword = [ "க்க,க", "ச்ச,ச", "த்த,த", "ப்ப,ப", "ற,ர", "ல,ள,ழ", "ந,ன,ண" ]
     sug = []
     limit = len(word)
-    for (h in range(0, limit)):
+    for h in range(0, limit):
         sug1 = []
         flag = False
-        for (i in range(0, len(sugword))):
+        for i in range(0, len(sugword)):
             poss = sugword[i].split(',')
             if (flag == False):
-                for ( j in range ( 0, len(poss) ) ):
-                    if (flag == false):
+                for j in range ( 0, len(poss) ):
+                    if (flag == False):
                         if ( len(word) >= len(poss[j])):
-                            if ( word[0 : len(poss[j])]  ) == poss[j ]):
+                            if ( word[0 : len(poss[j])] == poss[j]):
                                 word = word[len(poss[j]) : ]
                                 sug1 = sug1 + combination(sug, poss)
                                 flag = True
@@ -639,13 +637,13 @@ def getsuggestion2(word):
             
         if ( len(sug1) < 1):
             if (len(word) > 0):
-                sug = combination(sug, [word[0:1]]
+                sug = combination(sug, [word[0:1]])
                 word = word[1:]
         else:
             sug = sug1.copy()
-            if (sug.Length > 1000):
-                return [];
-            
+            if (len(sug) > 1000):
+                return []
+    #print(sug)        
     return sug
         
 
@@ -655,9 +653,9 @@ def combination(word, sug):
 
     sug1 = []
 
-    for (i in sug ):
-        for (j in word) :
-            sug1 = sug1.append( j + i )
+    for i in sug:
+        for j in word:
+            sug1.append( j + i )
             
     return sug1
         
@@ -692,6 +690,7 @@ def byproduct(varthai, suggest):
     pass
 
 def checkword(sol, typ):
+    #print("checkword" + " " + sol)
     #  return true;
     #output true or false
     
@@ -701,6 +700,8 @@ def checkword(sol, typ):
     #type = 3 -> peyar or venai
     #type = 4 -> non deri(Z,Adjective,adverb,conjuction,int)
     #type = 5 -> perfect noun without viku
+    #ty4 -> non deri(Z,Adjective,adverb,conjuction,int)
+    #type = 5 -> perfect noun without viku
     #type = 6 ->
     #type = 7 -> special used for suggestion check to avoid extensive derivatives
     
@@ -709,17 +710,18 @@ def checkword(sol, typ):
     if (typ == 7):    
         sugges = 1    
     
-    for  a in range(len(sol),0) :
+    for  a in range(len(sol),0,-1) :
         #It cuts from end. end is best since small word has many derivation like ഊ        
         paku = sol[0:a]
         viku = sol[a:] #,sol.length
-        qcode = Oword[paku]
+        qcode = Oword.get(paku)
         
         if (qcode is not None) :
             if (len(qcode) > 0) :
                 #foreach (dynamic b in qcode)
-                for( key, b in qcode):
-                    if (b["s"] != null) :
+                for b in qcode:
+                    if (b.get("s") != None) :
+#                    if (b["s"] != None) :
                         return True #to save time for foreign words and misspelled words
 
                     code = b["t"][0:1]
@@ -740,7 +742,7 @@ def checkword(sol, typ):
                         if (nonderi.find(code) == -1):
                             continue                        
                     elif(typ == 5):
-                        if ( peyar.find(code) != -1 and paku == sol and speyar.find(code) != -1 and code != "M") {
+                        if ( peyar.find(code) != -1 and paku == sol and speyar.find(code) != -1 and code != "M"): 
                              return True
                         else:
                             return False                         
@@ -782,13 +784,13 @@ def codeuyir(part):
     elu = ord(part[0:1])
 
     if (part.Length > 1):    
-        for (key, d in auyir):
+        for key, d in auyir:
             c = key
             if (chr(elu) == c) :
                 return part.replace(c, chr(auyir[c]))             
         
 
-        if ( (ord(elu) > 2965) && (ord(elu) < 2997)):            
+        if ( (ord(elu) > 2965) and (ord(elu) < 2997)):            
             return "அ" + part            
 
     return part
@@ -819,7 +821,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
 
         if (secondword.Length > 2):        
             sw = secondword
-            for (key, e in vauyir):            
+            for key, e in vauyir:            
                 d = key
                 #if (sw.Substring(0, 2) == d) { 
                 if ( sw[0 : 2] == d ) :
@@ -835,7 +837,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
             secondword = p[-1] + v
             if (checkword(secondword, 1)):
                 return True #check the noun word
-        return False;
+        return False
     #for வ noun prefix end
     
 
@@ -847,10 +849,10 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         sw = ""
         if (secondword.Length > 2):
             sw = secondword 
-            for (key, e in yauyir):
-                d = key; 
+            for key, e in yauyir:
+                d = key 
                 if (sw[0:2] == d):
-                    sw = sw.replace(d, e); 
+                    sw = sw.replace(d, e) 
                     break
             
             if (sw[0:1] == "ய"):
@@ -859,7 +861,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         if (checkword(sw, 1)) :
             return True
         elif (sw != secondword) :
-            secondword = p[-1] + v; 
+            secondword = p[-1] + v 
             if (checkword(secondword, 1)):
                 return True            
 
@@ -871,7 +873,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         if (sv != ""):
             return False
         
-        secondword = p[-1] + v; 
+        secondword = p[-1] + v 
 
         if (checkword(secondword, 1)):
             return True
@@ -942,17 +944,18 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         "24" : "34"    
     }
 
-    blocks = sc_values[sc]    
-    
-    for(d in range(8)):    
-        if (blocks.find(d) == -1):
+#    blocks = sc_values[sc]    
+    blocks = sc_values.get(sc)
+    for d in range(8):
+        if str(d) not in blocks:
+#        if (blocks.find(d) == -1):
             continue
 
-        if (Eword[c][d][v] is not None):
+        if (Eword.get(c)[d].get(v) is not None):
             try:
                 if (derivative(Eword[c][d][v], v, sv, sugges)):
-                    return true
-            catch:
+                    return True
+            except:
                 pass        
 
 
@@ -961,13 +964,12 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         if (v != ""):
             if (deri.find(c) != -1):
                 #to avoid adverb,adjective..
-                if (splitviku(v, c, sc, sugges))
-                    return true
+                if (splitviku(v, c, sc, sugges)):
+                    return True
             
     
-    return false;
+    return False
 
-}
 
 
 #check wheather derivatives are possible for given root words
@@ -1007,5 +1009,7 @@ def istamil(aword):
     
     return False
 
-gpathil11("நன்றி",'அஇஉ','ஈஈஊ')
-getsuggestion("அன்றி")
+testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்களா']  
+#testlist = ['வேண்டுகிறேண்']   
+gpathil11(testlist, True, 'exe')
+#print(checkword('வேண்டுகிறேன்', 7))
