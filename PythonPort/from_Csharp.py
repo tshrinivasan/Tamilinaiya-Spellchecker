@@ -281,8 +281,8 @@ def gpathil11(mword, opt, mode):
             continue
 
 #                            //5- Typo Correction
-            mword[i] = mword[i].replace("ொ", "ொ")
-            mword[i] = mword[i].replace("ோ", "ோ")
+        mword[i] = mword[i].replace("ொ", "ொ")
+        mword[i] = mword[i].replace("ோ", "ோ")
 
 
 
@@ -414,8 +414,7 @@ def gpathil11(mword, opt, mode):
                 sample = getsuggestion(mword[i])
                 emp = {}
                 sample2 = getsuggestion2(mword[i])
-                for x in list(sample.values()):
-                    sample2.append(x)
+                sample2.extend(sample)
                 usample = set(sample2)
 #                print(usample)
 
@@ -507,12 +506,10 @@ def gpathil11(mword, opt, mode):
 #We can use set instead of this function. Hence skipping this.
 #
 
-#def getsample(b,c,a,d):
-#    raise NotImplementedError() #TBD.
-
 def getsuggestion(c):  #//c is  mword[i]
     #print("getsuggestion" + " " + c)
-    sug = {}
+#    sug = {}
+    sug = []
     gword = db[0]["DB"][0]
     for j in gword.keys():
 #                    {//j gives every miswords
@@ -538,19 +535,20 @@ def getsuggestion(c):  #//c is  mword[i]
                                 sug1[l] = sug1[l].replace("s", d)
                                 return sug1
 
-#                    else:
-#                        sug = list(sug + (getsample(b, c, a, d)))
+                    else:
+                        sug = list(sug + (getsample(b, c, a, d)))
+                        sug.extend(getsample(b, c, a, d))
 
 
 
-#    sug = list(sug + getsample("100", c, "", "்")) # //special logics for ்
-#    sug = list(sug + getsample("100", c, "", "ா")) # .ToArray();//special logics for ா
-#    sug = list(sug + getsample("100", c, "", "ி")) # .ToArray();//special logic ி
-#    sug = list(sug + getsample("100", c, "", "ை")) # .ToArray();//special logic ை
-#    sug = list(sug + getsample("101", c, "", "")) # .ToArray();//special logics for ர-ா
-#    sug = list(sug + getsample("102", c, "", "1")) #.ToArray();
-#    sug = list(sug + getsample("102", c, "", "2")) #.ToArray();
-#    sug = list(sug + getsample("102", c, "", "3")) #.ToArray();
+    sug = list(sug + getsample("100", c, "", "்")) # //special logics for ்
+    sug = list(sug + getsample("100", c, "", "ா")) # .ToArray();//special logics for ா
+    sug = list(sug + getsample("100", c, "", "ி")) # .ToArray();//special logic ி
+    sug = list(sug + getsample("100", c, "", "ை")) # .ToArray();//special logic ை
+    sug = list(sug + getsample("101", c, "", "")) # .ToArray();//special logics for ர-ா
+    sug = list(sug + getsample("102", c, "", "1")) #.ToArray();
+    sug = list(sug + getsample("102", c, "", "2")) #.ToArray();
+    sug = list(sug + getsample("102", c, "", "3")) #.ToArray();
     #print(sug)        
     return sug
 
@@ -660,7 +658,63 @@ def combination(word, sug):
     return sug1
         
 
-        #---------getsample---------------------
+def getsample(code, word, fstr,tstr):
+    sample = []
+    if code == "0":
+        sample.append(word.replace(fstr, tstr))     #all replace
+        for j in range(word.count(fstr)):
+            sample.append(nth_replace(word, fstr, tstr, j))     #eachone replace
+    elif code == "1":   #ச->ச்   should not be starting letter.should be end with perfect mei
+        cmatch1 = re.finditer(fstr + "([ா-்]|)", word)
+        incre = 0
+        a = word
+        for mat in cmatch1:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if (ismat(c2, count)):  
+                a = a[0:count + incre] + tstr + a[count + len(c1) + incre:]    
+                incre += len(tstr) - len(c1)
+                sample.append(word[:count] + tstr + word[count + c1.Length:])
+    elif code == "2":   #should not be starting letter
+        cmatch2 = re.finditer(fstr, word)
+        incre = 0
+        a = word
+        for mat in cmatch2:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if count > 0:  #eachone replace?
+                a = a[:count + incre] + tstr + a[count + len(c1) + incre:]    #all replace?
+                incre += len(tstr) - len(c1)
+                sample.append(word[:count] + tstr + word[count + c1.Length:])
+    elif code == "3":   #should only be last letter
+        thala = word[:len(word) - len(fstr)]
+        if word == thala + fstr:
+            sample.append(thala + tstr)
+    elif code == "9":
+        pass    #since it is dual check, handled before income?
+    elif code == "4":   #should only be first letter
+        mcase4 = re.search(fstr, word)
+        if mcase4.group(0) == 0: 
+            sample.append(tstr + word[:len(fstr)])  #when it match with first character
+    elif code == "5":   #replace each one
+        cmatch5 = re.finditer(fstr, word)
+        incre = 0
+        for mat in cmatch5:
+            c1 = mat.group(0)
+            count = mat.start()
+            if (count > 0 and count < len(word) - 1):
+                incre += len(tstr) - len(c1)
+                sample.append(word[:count] + tstr + word[count + len(c1):])
+    return sample
+
+def nth_replace(str,search,repl,index):
+    split = str.split(search,index+1)
+    if len(split)<=index+1:
+        return str
+    return search.join(split[:-1])+repl+split[-1]
+
 
 def ismat(v1, v2) :
             #v1 needs to be blank since reg needs no ா-் nearby
@@ -951,12 +1005,13 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
 #        if (blocks.find(d) == -1):
             continue
 
-        if (Eword.get(c)[d].get(v) is not None):
-            try:
-                if (derivative(Eword[c][d][v], v, sv, sugges)):
-                    return True
-            except:
-                pass        
+        if (Eword.get(c) is not None):
+            if (Eword.get(c)[d].get(v) is not None):
+                try:
+                    if (derivative(Eword[c][d][v], v, sv, sugges)):
+                        return True
+                except:
+                    pass        
 
 
     #C# need v as blank
@@ -1009,7 +1064,13 @@ def istamil(aword):
     
     return False
 
-testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்களா']  
+#testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்களா']  
+#testlist = ['அதனால்த்', ' ', 'தான்'] 
+#testlist = ['கன்னால்', ' ', 'பார்த்தென்'] 
 #testlist = ['வேண்டுகிறேண்']   
+#testlist = ['கற்ப்பிக்கிறேன்']
+testlist = ['முன்ணணி']
 gpathil11(testlist, True, 'exe')
 #print(checkword('வேண்டுகிறேன்', 7))
+#getsample("0", 'கற்ப்பிக்கிறேன்', 'கற','கிற')
+#getsample("0", 'முண்ணணி', 'ண','ந')
