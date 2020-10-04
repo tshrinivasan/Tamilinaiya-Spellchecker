@@ -707,6 +707,73 @@ def getsample(code, word, fstr,tstr):
             if (count > 0 and count < len(word) - 1):
                 incre += len(tstr) - len(c1)
                 sample.append(word[:count] + tstr + word[count + len(c1):])
+    elif code == "101":     #நரர்கள் -> நார்கள்
+        matches0 = re.finditer("[க-ஹ]ர([^ா-்]|)", word)
+        a = word
+        for mat in matches0:
+            count = mat.start()
+            a = a[:count - 1] + "ா" + a[count:]     #all replace
+            sample.append(word[:count - 1] + "ா" + word[count:])
+        sample.append(a)
+    elif code == "102":     #for repeated sequence
+        diff = int(tstr)
+        for i in range(len(word) - (diff * 2)):
+            if (word[i:i + diff] == word[i + diff:i + diff + diff]):
+                sample.append(word[:i] + word[i + diff:])
+    elif code == "100":     
+#       ச->ச்
+        matches2 = re.finditer("[க-ஹ]([ா-்]|)", word)
+        incre = 0
+        a = word
+        for mat in matches2:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if (ismat(c2, count)):
+                a = a[:count + incre] + c1 + tstr + a[count + len(c1) + incre:]   #all replace
+                incre += len(tstr) - len(fstr)
+                sample.append(word[:count] + c1 + tstr + word[count + len(c1):])
+        sample.append(a)
+
+#       க்ச->கச் ottru post shifter
+        matches4 = re.finditer("[க-ஹ]" + tstr + "[க-ஹ]([ா-்]|)", word)
+        incre = 0
+        a = word
+        for mat in matches4:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if (ismat(c2, count)):
+                a = word[:count] + c1[:1] + c1[2:3] + tstr + word[count + len(c1):]
+                sample.append(a)
+
+#       கச்->க்ச ottru pre shifter படிபப்டியாக
+        matches5 = re.finditer("[க-ஹ]" + tstr + "[க-ஹ]([ா-்]|)", word)
+        incre = 0
+        a = word
+        for mat in matches5:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if (ismat(c2, count)):
+                a = word[:count] + c1[:1] + tstr + c1[1:2] + word[count + len(c1):]
+                sample.append(a)
+
+#       ப்ட்ட->ப்டட் doubleottru post shifter
+        matches6 = re.finditer("[க-ஹ]" + tstr + "[க-ஹ]([ா-்]|)", word)
+        incre = 0
+        a = word
+        for mat in matches6:
+            c1 = mat.group(0)
+            count = mat.start()
+            c2 = mat.group(1)
+            if (ismat(c2, count)):
+                a = word[:count] + c1[:3] + c1[4:5] + tstr + word[count + len(c1):]
+                sample.append(a)
+
+#       பட்ட்->ப்டட் doubleottru pre shifter-unused since pratically ottru pre shifter do this
+#       word.replace(RegExp("[க-ஹ]([ா-்]|)[க-ஹ]"+tstr+"[க-ஹ]"+tstr, "gi"), function (c1,c2,count,word) {if(ismat(c2,count)){var a =word.substr(0,count)+c1.substr(0,1)+tstr+c1.substr(1,1)+c1.substr(3,2)+word.substr(count+c1.length);sample.push(a);}return ;});
+        
     return sample
 
 def nth_replace(str,search,repl,index):
@@ -1064,12 +1131,11 @@ def istamil(aword):
     
     return False
 
-#testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்களா']  
-#testlist = ['அதனால்த்', ' ', 'தான்'] 
+testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்கலா']  
 #testlist = ['கன்னால்', ' ', 'பார்த்தென்'] 
 #testlist = ['வேண்டுகிறேண்']   
 #testlist = ['கற்ப்பிக்கிறேன்']
-testlist = ['முன்ணணி']
+#testlist = ['முன்ணணி']
 gpathil11(testlist, True, 'exe')
 #print(checkword('வேண்டுகிறேன்', 7))
 #getsample("0", 'கற்ப்பிக்கிறேன்', 'கற','கிற')
