@@ -4,6 +4,8 @@ import json
 import re
 import os
 import sys
+sys.path.append("/home/tamil-sandhi-checker")
+from tamilsandhi.sandhi_checker import check_sandhi
 
 
 peyar = "MLTYWNEIQOGDHVXBPSളവ"
@@ -125,27 +127,27 @@ def getviku(v,c,sc):
 
 
     for d in range(8):
+        if (str(d) in blocks):
+            for b in range(len(v),-1,-1):
 
-        for b in range(len(v),-1,-1):
+                subpaku = v[0, b]
+                subviku = v[b]
 
-            subpaku = v[0, b]
-            subviku = v[b]
+                part = Eword[c][d][subpaku]
 
-            part = Eword[c][d][subpaku]
+                if part:
+                    if ("①" or "②" in part):
 
-            if part:
-                if ("①" or "②" in part):
+                        code1 = part[len(part) - 3, 1]
+                        subcode1 = part[len(part) - 2]
 
-                    code1 = part[len(part) - 3, 1]
-                    subcode1 = part[len(part) - 2]
+                        vikuth = getviku(subviku, code1, subcode1)
 
-                    vikuth = getviku(subviku, code1, subcode1)
+                        if (vikuth != "false"):
+                            return vikuth
 
-                    if (vikuth != "false"):
-                        return vikuth
-
-                    elif (subviku == ""):
-                        return part
+                        elif (subviku == ""):
+                            return part
 
     return False
 
@@ -238,7 +240,9 @@ def gpathil11(mword, opt, mode):
     parinthu = [[None,None] for i in range(len(mword))]
     ottran = [[None,None] for i in range(len(mword))]
 
-
+#    mword,result_stats = check_sandhi(mword)
+#    print(mword)
+#    print(result_stats)
     for i in range(len(mword)):
         parinthu[i][ 0] = 0 #;//count of suggestion
         parinthu[i][ 1] = "wrong" #;//suggestions
@@ -301,7 +305,7 @@ def gpathil11(mword, opt, mode):
                                 b = str(k['w'])
 
                                 for l in tranrule[a]:
-                                    map = str(l['t']).split(',')
+                                    map = str(l['t']).split(splitchar)
 
                                     if  (tname + map[0]) in mword[i]:
 
@@ -319,17 +323,32 @@ def gpathil11(mword, opt, mode):
 #             //7.sandhi remover and sandi/punarchi memory
         if ((i + 2) < len(mword)):
             if (len(mword[i + 2]) > 0):
-                ottru = mword[i][(len(mword[i]) - 2):]
-                methi = mword[i][0:len(mword[i]) - 2]
+
                 muthal = mword[i + 2][0: 1]
 
                 rgx1 = "[கசதப]்"
                 rgx2 = "[கசதப]"
+# if the second word starts with any uyirmei of கசதப let us call sandhi checker                
+
+                if re.match(rgx2,muthal):
+#                if re.match(rgx2,muthal) and  not (mword[i][(len(mword[i]) - 2):] == muthal + "்"):               
+                    sanlist = [mword[i], mword[i + 2]]
+                    sanlist,result_stats = check_sandhi(sanlist)
+                    print(sanlist)
+                    print(result_stats)
+                    if sanlist[0] != mword[i]:
+                        mword[i] = sanlist[0]
+                        parinthu[i][0] = 1
+                        parinthu[i][1] = sanlist[0]
+
+                ottru = mword[i][(len(mword[i]) - 2):]
+                methi = mword[i][0:len(mword[i]) - 2]
 
                 if re.match(rgx1,ottru):
                     if (muthal + "்" == ottru):
-                        mword[i] = methi
-                        sandi = ottru
+                        if (parinthu[i][0] == 0):
+                            mword[i] = methi
+                            sandi = ottru
 
                 elif ottru == "ட்":
                     if re.match(rgx2,muthal):
@@ -412,7 +431,7 @@ def gpathil11(mword, opt, mode):
         if (opt == True):
             if (ottran[i][0] == 0):
                 sample = getsuggestion(mword[i])
-                emp = {}
+#                emp = {}
                 sample2 = getsuggestion2(mword[i])
                 sample2.extend(sample)
                 usample = set(sample2)
@@ -463,7 +482,7 @@ def gpathil11(mword, opt, mode):
                             parinthu[i + 2][1] = "correct"
                             parinthu[i + 2][0] = 0
 
-                        if (ottran[i + 2][0] == 1): #//if next word is correct
+                        if (ottran[i + 2],[0] == 1): #//if next word is correct
                             combo = checkword(mword[i] + mword[i + 2], 0)
                             thibo = checkword(mword[i] + chandi + mword[i + 2], 0)
                             derive = checkword(mword[i], 5)  # ;//return true if it is valid perfect noun
@@ -588,10 +607,10 @@ def getsuggestion3(c, supl, n):
                  d = k['w']
                  p = "p" + str(n)
 
-#                 getsamplec2 = getsample(b, c, a, p)
+                 getsamplec2 = getsample(b, c, a, p)
 
-#                 c2 = list(c2 + getsamplec2)
-                 c2 = list(c2)
+                 c2 = list(c2 + getsamplec2)
+#                 c2 = list(c2)
                  suplist2 = json.loads(json.dumps(suplist)) #;//to avoid original json change
 
                  suplist2.remove(a) #YTD Have to find the relevant remove method for python
@@ -675,7 +694,7 @@ def getsample(code, word, fstr,tstr):
             if (ismat(c2, count)):  
                 a = a[0:count + incre] + tstr + a[count + len(c1) + incre:]    
                 incre += len(tstr) - len(c1)
-                sample.append(word[:count] + tstr + word[count + c1.Length:])
+                sample.append(word[:count] + tstr + word[count + len(c1):])
     elif code == "2":   #should not be starting letter
         cmatch2 = re.finditer(fstr, word)
         incre = 0
@@ -683,11 +702,11 @@ def getsample(code, word, fstr,tstr):
         for mat in cmatch2:
             c1 = mat.group(0)
             count = mat.start()
-            c2 = mat.group(1)
+#            c2 = mat.group(1)
             if count > 0:  #eachone replace?
                 a = a[:count + incre] + tstr + a[count + len(c1) + incre:]    #all replace?
                 incre += len(tstr) - len(c1)
-                sample.append(word[:count] + tstr + word[count + c1.Length:])
+                sample.append(word[:count] + tstr + word[count + len(c1):])
     elif code == "3":   #should only be last letter
         thala = word[:len(word) - len(fstr)]
         if word == thala + fstr:
@@ -835,9 +854,11 @@ def checkword(sol, typ):
         #It cuts from end. end is best since small word has many derivation like ഊ        
         paku = sol[0:a]
         viku = sol[a:] #,sol.length
-        qcode = Oword.get(paku)
+#        qcode = Oword.get(paku)
+        if paku in Oword:
+            qcode = Oword[paku]
         
-        if (qcode is not None) :
+#        if (qcode is not None) :
             if (len(qcode) > 0) :
                 #foreach (dynamic b in qcode)
                 for b in qcode:
@@ -849,7 +870,8 @@ def checkword(sol, typ):
                     subcode = b["t"][1:]
 
                     if(typ == 0):
-                        break
+#                        break
+                        continue
                     elif(typ == 1):
                         if ( (peyar.find(code) == -1 or subcode != "15" ) and  speyar.find(code) == -1): 
                             continue
@@ -871,8 +893,8 @@ def checkword(sol, typ):
                         if (subcode != "15"):
                             continue                   
 
-                    if (checkviku(paku, viku, "", code, subcode, sugges)):                    
-                        return True                  
+                if (checkviku(paku, viku, "", code, subcode, sugges)):                    
+                    return True                  
     
     return False
 
@@ -904,8 +926,8 @@ def codeuyir(part):
 
     elu = ord(part[0:1])
 
-    if (part.Length > 1):    
-        for key, d in auyir:
+    if (len(part) > 1):    
+        for key in auyir:
             c = key
             if (chr(elu) == c) :
                 return part.replace(c, chr(auyir[c]))             
@@ -940,7 +962,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
         secondword = p[-1] + v
         sw = ""
 
-        if (secondword.Length > 2):        
+        if (len(secondword) > 2):        
             sw = secondword
             for key, e in vauyir:            
                 d = key
@@ -968,7 +990,7 @@ def checkviku(p, v, sv, c, sc, sugges) : #paku,viku,subviku,code,subcode
             return False
         secondword = p[-1] + v
         sw = ""
-        if (secondword.Length > 2):
+        if (len(secondword) > 2):
             sw = secondword 
             for key, e in yauyir:
                 d = key 
@@ -1131,12 +1153,26 @@ def istamil(aword):
     
     return False
 
-testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்கலா']  
+# spelling correction
+#testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்கலா']  
 #testlist = ['கன்னால்', ' ', 'பார்த்தென்'] 
 #testlist = ['வேண்டுகிறேண்']   
 #testlist = ['கற்ப்பிக்கிறேன்']
 #testlist = ['முன்ணணி']
+#testlist = ['சறியாக', ' ', 'கன்டுபிடிக்கும்']
+
+# sandhi
+#testlist = ['இந்த', ' ', 'பெட்டியில்']
+#testlist = ['கூலி', ' ', 'படை']
+#testlist = ['இலக்கண', ' ', 'பிழைகளை']
+
+# sandhi and spelling correction together
+testlist = ['பிடிக்க', ' ', 'தடுமாரலாம்'] 
+#testlist = ['சரிவர', ' ', 'சோதிக்கிரதா'] 
+
 gpathil11(testlist, True, 'exe')
 #print(checkword('வேண்டுகிறேன்', 7))
-#getsample("0", 'கற்ப்பிக்கிறேன்', 'கற','கிற')
-#getsample("0", 'முண்ணணி', 'ண','ந')
+#print(getsample("0", 'கற்ப்பிக்கிறேன்', 'கற', 'கிற'))
+#print(getsample("0", 'முண்ணணி', 'ண', 'ந'))
+#print(checkword('சரியாகக்கண்டுபிடிக்கும்', 0))
+#print(checkviku('சரியா', 'க', "", 'ஆ', '15', 0))
