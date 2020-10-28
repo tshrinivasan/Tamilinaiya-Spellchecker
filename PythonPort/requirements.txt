@@ -1,0 +1,2 @@
+tamil>=0.96
+tamilsandhi>=0.1
