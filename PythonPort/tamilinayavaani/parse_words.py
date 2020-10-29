@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
+# -*- coding: utf-8 -*-
 import tamil
-
 
 # reference - https://thanithamizhakarathikalanjiyam.github.io/windows_283
 start_letters = [
@@ -36,26 +34,10 @@ end_letters = [
 'னு','னூ','னே','னை','னோ'
 ]
 
-
 def check_first_letter(word):
-
     letters = tamil.utf8.get_letters(word)
-
-    if letters[0] in start_letters:
-        return True
-    else:
-        return False
-    
-
+    return letters[0] in start_letters
 
 def check_last_letter(word):
-
     letters = tamil.utf8.get_letters(word)
-
-    if letters[-1] in end_letters:
-        return True
-    else:
-        return False
-
-print(check_first_letter("நன்றி"))
-print(check_last_letter("நன்றி"))
+    return letters[-1] in end_letters
