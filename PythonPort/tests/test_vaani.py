@@ -2,7 +2,8 @@
 
 import unittest
 from tamilinayavaani.from_Csharp import gpathil11, checkviku, getsample
-from tamilinayavaani import checkword, check_sandhi
+from tamilinayavaani import checkword, check_sandhi, SpellChecker, SpellCheckerResult
+import os
 
 # spelling correction
 # testlist = ['நேயர்கலே', ' ', 'நிகழ்சியைப்', ' ', 'பார்த்தீர்கலா']
@@ -23,6 +24,19 @@ from tamilinayavaani import checkword, check_sandhi
 
 
 class TestSpellCheckWords(unittest.TestCase):
+    def test_கோப்பிலிருந்து(self):
+        expected=[SpellCheckerResult(Flag=False, Solspan=None, Userword='நேயர்கலே', Suggestions=['நேயர்களே']),
+        SpellCheckerResult(Flag=False, Solspan=None, Userword='நிகழ்சியைப்',
+        Suggestions=[]), SpellCheckerResult(Flag=False, Solspan=None, Userword='பார்த்தீர்கலா', Suggestions=['பார்த்தீர்களா'])]
+        fname = 'demo.txt'
+        words = ['நேயர்கலே', 'நிகழ்சியைப்', 'பார்த்தீர்கலா']
+        with open(fname,'w') as fp:
+            [fp.write(word+'\n') for word in words]
+        result = SpellChecker(fname).run()
+        os.unlink(fname)
+        print(result)
+        self.assertEqual(len(result),3)
+
     def test_அ(self):
         testlist = ['கூலி', ' ', 'படை']
         expected = [[1, 'கூலிப்'], [0, 'correct'], [0, 'correct']]

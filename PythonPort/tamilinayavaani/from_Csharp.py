@@ -206,7 +206,8 @@ def tranlate(code):
 # print(tranlate("㚱"))
 
 
-def gpathil11(mword, opt, mode):
+def gpathil11(mword, opt=True, mode='exe'):
+    """ entry point of the spell-checker. Default option is True, mode = 'exe'."""
     # print("gpathil11" + mword[0] )
     user_file = os.path.join(get_data_dir("koppu"),"user.txt")
     if os.path.exists(user_file):
