@@ -8,7 +8,7 @@ import sys
 
 sys.path.append("/home/tamil-sandhi-checker")
 from tamilsandhi.sandhi_checker import check_sandhi
-
+DEBUG=False
 
 def get_data_dir(data_dir):
     dirname, filename = os.path.split(os.path.abspath(__file__))
@@ -205,19 +205,29 @@ def tranlate(code):
 
 # print(tranlate("㚱"))
 
+# lazy caching.
+class _Cached:
+    _g_userOword=None
+    _g_usergword=None
 
 def gpathil11(mword, opt=True, mode='exe'):
     """ entry point of the spell-checker. Default option is True, mode = 'exe'."""
     # print("gpathil11" + mword[0] )
     user_file = os.path.join(get_data_dir("koppu"),"user.txt")
     if os.path.exists(user_file):
-        userfile = open(user_file, 'r').readlines()
-        userOword = userfile[0].split(',')
-        usergword = userfile[1].split(',')
+        if (not _Cached._g_userOword) and (not _Cached._g_usergword):
+            with open(user_file, 'r') as fp:
+                userfile = fp.readlines()
+            userOword = userfile[0].split(',')
+            usergword = userfile[1].split(',')
+            _Cached._g_userOword = userOword
+            _Cached._g_usergword = usergword
+        else:
+            userOword = _Cached._g_userOword
+            usergword = _Cached._g_usergword
     else:
         userOword = ""
         usergword = ""
-
     splitchar = ','
 
     parinthu = [[None, None] for i in range(len(mword))]
@@ -233,22 +243,20 @@ def gpathil11(mword, opt=True, mode='exe'):
         ottran[i][1] = 1
 
     for i in range(len(mword)):
-
         sandi = ""
         punarchi = False
 
-        #            //1 - if it is verified already
+        #1 - if it is verified already
         if (ottran[i][0] == 1):
             continue
 
-        #            //2 - removing blank char
+        #2 - removing blank char
         if (len(mword[i]) < 1):
             parinthu[i, 0] = -1
             parinthu[i, 1] = ""
             continue
 
-        #           //3.ignoring single consonant letters
-
+        #3.ignoring single consonant letters
         if (len(mword[i]) == 2):
 
             rgx = "[ா-்]"
@@ -258,18 +266,18 @@ def gpathil11(mword, opt=True, mode='exe'):
                 parinthu[i][0] = 0
                 continue
 
-        #                //4.ignoring single vowel letters
+        #4.ignoring single vowel letters
         if (len(mword[i]) == 1):
             ottran[i][0] = 1
             parinthu[i][1] = "correct"
             parinthu[i][0] = 0
             continue
 
-        #                            //5- Typo Correction
+        #5- Typo Correction
         mword[i] = mword[i].replace("ொ", "ொ")
         mword[i] = mword[i].replace("ோ", "ோ")
 
-        #                //6 - Translation
+        #6 - Translation
         if (opt == True):
             if (ottran[i][0] == 0):
                 istrans = False
@@ -279,30 +287,23 @@ def gpathil11(mword, opt=True, mode='exe'):
                     if tname in mword[i]:
                         if (len(tword[tname]) > 0):
                             for k in tword[tname]:
-                                #                                          {//k is array of suggestions
+                                #k is array of suggestions
                                 a = str(k['t'])
                                 b = str(k['w'])
-
                                 for l in tranrule[a]:
                                     map = str(l['t']).split(splitchar)
-
                                     if (tname + map[0]) in mword[i]:
-
                                         nword = mword[i].replace(tname + map[0], b + map[1])
-
                                         if (checkword(nword, 0)):
                                             addparinthu(parinthu, i, nword)
                                             istrans = True
-
                 if (istrans == True):
                     ottran[i, 0] = 1
 
-        #             //7.sandhi remover and sandi/punarchi memory
+        #7.sandhi remover and sandi/punarchi memory
         if ((i + 2) < len(mword)):
             if (len(mword[i + 2]) > 0):
-
                 muthal = mword[i + 2][0: 1]
-
                 rgx1 = "[கசதப]்"
                 rgx2 = "[கசதப]"
                 # if the second word starts with any uyirmei of கசதப let us call sandhi checker
@@ -375,7 +376,7 @@ def gpathil11(mword, opt=True, mode='exe'):
                     parinthu[i][0] = len(b.split(','))
                 ottran[i][0] = 1
 
-        #            //9 - skip if was userpreferance
+        #9 - skip if was userpreferance
         if (ottran[i][0] == 0):
             for a in userOword:
                 if (a == str(mword[i])):
@@ -390,22 +391,22 @@ def gpathil11(mword, opt=True, mode='exe'):
                 if (nword[0] == str(mword[i])):
                     parinthu = addparinthu(parinthu, i, nword[1])
 
-        #                //10 - word match
+        #10 - word match
         if (ottran[i][0] == 0):
             if (checkword(mword[i], 0)):
                 ottran[i][0] = 1
                 parinthu[i][1] = "correct"
                 parinthu[i][0] = 0
 
-        #                                    //11 - gword suggestion
+        #11 - gword suggestion
         if (opt == True):
             if (ottran[i][0] == 0):
                 sample = getsuggestion(mword[i])
-                #                emp = {}
+                #emp = {}
                 sample2 = getsuggestion2(mword[i])
                 sample2.extend(sample)
                 usample = set(sample2)
-                #                print(usample)
+                #print(usample)
 
                 for l in usample:
                     nword = l
@@ -414,25 +415,22 @@ def gpathil11(mword, opt=True, mode='exe'):
                         if (punarchi):
                             ottru = nword[len(nword) - 2]
                             methi = nword[0, len(nword) - 2]
-
                             if (ottru == "ள்"):
                                 addparinthu(parinthu, i, methi + "ட்")
                             elif (ottru == "ல்"):
                                 addparinthu(parinthu, i, methi + "ற்")
                             elif ottru == "ம்":
                                 addparinthu(parinthu, i, methi + sandi)
-
                         else:
                             parinthu = addparinthu(parinthu, i, nword + sandi)
 
         #                //12 cache the search
         if (len(mword[i]) > 0):
-
             if not (mword[i] + sandi) in cacheword:
                 cacheword.append(mword[i] + sandi)
                 cachesug.append(parinthu[i][1])
 
-        # //13 - Check sandhi need or not needed should not cache
+        # 13 - Check sandhi need or not needed should not cache
         if (ottran[i], [0] == 1):  # //if this word is correct
             if (len(mword) > i + 2):
                 if (len(mword[i + 2]) > 1):
@@ -478,10 +476,8 @@ def gpathil11(mword, opt=True, mode='exe'):
             else:
                 z = ":"
         return Arr[0: len(Arr) - 1]
-    else:
-        print(parinthu)
-        return parinthu
-
+    if DEBUG: print(parinthu)
+    return parinthu
 
 # def RemoveDuplicates(s):
 #

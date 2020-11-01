@@ -24,6 +24,18 @@ import os
 
 
 class TestSpellCheckWords(unittest.TestCase):
+    def test_வலைவழிஅணுகுதல்(self):
+        #REST_interface test
+        words = ['நேயர்கலே', 'நிகழ்சியைப்', 'பார்த்தீர்கலா']
+        திருத்திய = [['நேயர்களே'],[],['பார்த்தீர்களா']]
+        for idx,word in enumerate(words):
+            பட்டியல் = SpellChecker.REST_interface(word)
+            self.assertFalse( பட்டியல்[0] )
+            self.assertEqual( திருத்திய[idx],  பட்டியல்[1] )
+        self.assertEqual(idx,2)
+        word_p_ws = '  '+words[0]+'\n'
+        self.assertEqual(words[0],SpellChecker.scrub_ws(word_p_ws))
+
     def test_கோப்பிலிருந்து(self):
         expected=[SpellCheckerResult(Flag=False, Solspan=None, Userword='நேயர்கலே', Suggestions=['நேயர்களே']),
         SpellCheckerResult(Flag=False, Solspan=None, Userword='நிகழ்சியைப்',
