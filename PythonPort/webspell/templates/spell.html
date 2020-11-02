@@ -1,0 +1,40 @@
+<!-- (C) 2016 M A -->
+<!-- Open-Tamil Project -->
+<!doctype html>
+<title>Spell check Open-Tamil</title>
+<body>
+<form method="POST">
+ <select name="lang" value="TA">
+  <option>TA</option>
+  <option>EN</option>
+ </select>
+{% if solution %}
+ <input name="word" value="{{ word }}"></input>
+{% else %}
+ <input name="word" value="தமில்"></input>
+{% endif %}
+ <button type="submit">Check</button>
+</form>
+
+<!----- Spell Checker Portion ------------>
+<form method="POST" action="/spellchecker">
+ <select name="lang" value="ta_IN">
+  <option>ta_IN</option>
+  <option>en_IN</option>
+ </select>
+{% if solution %}
+ <input name="text" value="{{ word }}"></input>
+{% else %}
+ <input name="text" value="தமில்"></input>
+{% endif %}
+ <button type="submit">Check</button>
+</form>
+
+
+{% if solution %}
+<BR />
+{{ HTML | safe}}
+{% endif %}
+
+</body>
+ 
