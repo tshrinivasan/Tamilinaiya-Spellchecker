@@ -152,11 +152,11 @@ def checkroot(word):
     #   print(rule)
 
     for a in range(len(word) - 1, -1, -1):
-        print(a)
+        #print(a)
         paku = word[0:a]
-        print("paku = " + paku)
+        #print("paku = " + paku)
         viku = word[a]
-        print("viku = " + viku)
+        #print("viku = " + viku)
 
         #        print(Oword[paku])
 
@@ -165,11 +165,11 @@ def checkroot(word):
 
             if (qcode) and (len(qcode) > 0):
                 for b in qcode:
-                    print("qcode = " + str(b))
+                    #print("qcode = " + str(b))
                     code = b['t'][0:1]
-                    print("code = " + code)
+                    #print("code = " + code)
                     subcode = b['t'][1:]
-                    print("subcode = " + subcode)
+                    #print("subcode = " + subcode)
                     vikuthi = getviku(viku, code, subcode)
 
                     if vikuthi != "false":
@@ -177,7 +177,7 @@ def checkroot(word):
                         outp[1] = " " + tranlate(vikuthi)
                         return outp
 
-                    print(outp)
+                    #print(outp)
 
 
 # checkroot("நன்றிகள்")
@@ -312,8 +312,8 @@ def gpathil11(mword, opt=True, mode='exe'):
                     #                if re.match(rgx2,muthal) and  not (mword[i][(len(mword[i]) - 2):] == muthal + "்"):
                     sanlist = [mword[i], mword[i + 2]]
                     sanlist, result_stats = check_sandhi(sanlist)
-                    print(sanlist)
-                    print(result_stats)
+                    #print(sanlist)
+                    #print(result_stats)
                     if sanlist[0] != mword[i]:
                         mword[i] = sanlist[0]
                         parinthu[i][0] = 1

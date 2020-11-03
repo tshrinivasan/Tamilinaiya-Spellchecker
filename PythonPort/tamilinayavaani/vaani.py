@@ -15,8 +15,11 @@ class SpellChecker:
         self.results = [] #object of type Result
 
     @staticmethod
-    def REST_interface(user_word):
-        result = gpathil11([user_word])
+    def REST_interface(user_word,next_word=None):
+        words = [user_word]
+        if next_word:
+            words.extend([' ',next_word])
+        result = gpathil11(words)
         is_correct,suggestions=SpellChecker.post_proc_result(result[0])
         return is_correct,suggestions
 
