@@ -3,10 +3,8 @@
 from __future__ import print_function
 from webspell import app
 import json
-import codecs
 import sys
-import re
-import pprint
+from pprint import pprint
 import re
 
 from flask import request, render_template, redirect, url_for
@@ -18,56 +16,44 @@ def index():
     return redirect('/static/tinymce/index.html')
 
 #/spell?word=%E0%AE%B5%E0%AE%B0%E0%AF%81%E0%AE%95&lang=ta
-#
 @app.route('/spell',methods=['GET','POST'])
 def spell():
     if request.method == "GET":
         return render_template("spell.html",solution=False)
 
     if request.method != "POST":
-        return "<B>404! Error</B>"
+        return "<B>404! பிழை அறிக்கை</B>"
 
     if u'word' in request.form:
         word = request.form['word']
         if not word:
-            return "Enter word!"
+            return "சொல் உள்ளீடு செய்க!"
         lang="TA"
         if "lang" in request.form:
             lang = request.form["lang"]
 
-        ok,suggs = Speller(lang=lang,mode="web").REST_interface(word)
+        try:
+            ok, suggs = SpellChecker.REST_interface(word)
+            #pprint(suggs)
+        except Exception as ioe:
+            ok = True
+
         if ok:
-            HTML = "<B style='color:green;'>OK!</B>"
+            HTML = "<B style='color:green;'>சரியான் சொல் '{0}'!</B>".format(word)
         else:
-            data_suggs = json.loads(suggs)
-            data_suggs2 = u"<br/>\n".join( [u"<option>%d %s</option>"%(itr+1,s_word) for itr,s_word in enumerate( data_suggs.values()[0])])
-            HTML = "<B style='color:red;'>Not OK!</B><br /><select>"+data_suggs2+"\n</select><br/>"
+            HTML = "<B style='color:red;'>பிழையான சொல் '{0}'</B><br />".format(word)
+            if len(suggs) > 0:
+                data_suggs = u"<br/>\n".join([u"<option>%d %s</option>"%(itr+1,s_word) for itr,s_word in enumerate(suggs)])
+                HTML += "<p>மாற்றங்கள்: <div><select>"+data_suggs+"\n</select></div></p>"
+
         return render_template("spell.html",solution=True,HTML=HTML,word=word)
     return redirect(url_for('spell'))
-
-def spell_get_only():
-    raise NotImplemetedError()
-    if u'word' in request.args:
-        word = request.args['word']
-        if not word:
-            return "Enter word!"
-        lang="TA"
-        if "lang" in request.args:
-            lang = request.args["lang"]
-
-        ok,suggs = Speller(lang=lang,mode="web").REST_interface(word)
-        if ok:
-            return "<B style='color:green;'>OK!</B>"
-        data_suggs = suggs
-        data_suggs2 = u"<br/>\n".join( [u"%d %s"%(itr+1,s_word) for itr,s_word in enumerate( data_suggs.values()[0])])
-        return "<B style='color:red;'>Not OK!</B><br />"+data_suggs2+"\n<br/>"+suggs
-    return 'spell check with ?word=$word&lang=en'
 
 @app.route('/spellchecker',methods=['GET','POST'])
 def spellchecker():
     if request.method == 'POST':
-        print(request.form.keys(),file=sys.stderr)
-        print(request.form['lang'],file=sys.stderr)
+        #print(request.form.keys(),file=sys.stderr)
+        #print(request.form['lang'],file=sys.stderr)
         lang = request.form['lang']
         text = request.form['text']
         if lang != "ta_IN":
@@ -75,20 +61,20 @@ def spellchecker():
         lang = "TA"
         result_dict = {'words':{}}
 
-        for itr,word in enumerate( filter(len,re.split('\s+',text)) ):
+        wordlist = list(filter(len,re.split('\s+',text)))
+        Lmax = len(wordlist)-1
+        for itr,word in enumerate( wordlist ):
             if word.find("<") >= 0: #HTML Tags, skip
                 continue
-            print("checking word %d"%itr,file=sys.stderr)
+            #print("checking word %d"%itr,file=sys.stderr)
             try:
-                ok,suggs = SpellChecker.REST_interface(word)
-                pprint.pprint(suggs)
+                next_word = wordlist[itr+1] if itr != Lmax else None
+                ok,suggs = SpellChecker.REST_interface(word,next_word)
             except Exception as ioe:
                 ok = True
-                pprint.pprint(ioe)
 
             if not ok:
                 word = SpellChecker.scrub_ws(word)
                 result_dict['words'][word] = list(suggs)
         return json.dumps(result_dict)
-    else:
-        return "RPC interface for TinyMCE Spell Checker!"
+    return "RPC interface for TinyMCE Spell Checker!"

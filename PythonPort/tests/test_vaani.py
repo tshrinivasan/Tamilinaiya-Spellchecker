@@ -49,6 +49,12 @@ class TestSpellCheckWords(unittest.TestCase):
         print(result)
         self.assertEqual(len(result),3)
 
+    def test_sandhi_web_interface(self):
+        flag,suggs=SpellChecker.REST_interface('வாழை','பழம்')
+        expected=['வாழைப்', 'பழம்']
+        self.assertFalse(flag)
+        self.assertEqual(expected[0],suggs[0])
+
     def test_அ(self):
         testlist = ['கூலி', ' ', 'படை']
         expected = [[1, 'கூலிப்'], [0, 'correct'], [0, 'correct']]
