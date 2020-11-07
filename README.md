@@ -43,5 +43,5 @@ This code is licensed under terms of GNU GPL V2. Check https://commons.wikimedia
 2. Python Port was enabled by Kaniyam Foundation, T. Shrinivasan, @manikk, Ashok Ramachandran, and others.
    You can support Kaniyam Foundation and its mission by donating via instructions
    here, <a href="http://www.kaniyam.com">Kaniyam link</a>.
-   The Python port depends on tamilsandhichecker project <a href="https://github.com/nithyadurai87/tamil-sandhi-checker"> </a> and the Open-Tamil 
+   The Python port depends on tamilsandhichecker project <a href="https://github.com/nithyadurai87/tamil-sandhi-checker">TamilSandhiChecker</a> and the Open-Tamil 
    project <a href="https://pypi.org/project/Open-Tamil/">link</a>

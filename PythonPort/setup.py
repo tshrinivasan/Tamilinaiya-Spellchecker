@@ -24,6 +24,6 @@ setup(name='tamilinayavaani',
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4'],
-      long_description=open('../README.md','r').read(),
-      download_url='https://github.com//archive/master.zip',#pip
+      long_description=open('../README.rst','r').read(),
+      download_url='https://github.com/Ezhil-Language-Foundation/Tamilinaiya-Spellchecker/archive/v0.11.zip',#pip
       )
