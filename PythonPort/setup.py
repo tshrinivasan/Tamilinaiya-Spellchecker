@@ -7,7 +7,7 @@ from distutils.core import setup
 from codecs import open
 
 setup(name='tamilinayavaani',
-      version='0.11',
+      version='0.12',
       description='Tamil spell checker',
       author='Tamil Virtual Academy, Neechalkaran, T. Shrinivasan, Ashok Ramachandran, Mani K, Ezhil Language Foundation, et-al',
       author_email='tshrinivasan@gmail.com',
@@ -24,6 +24,6 @@ setup(name='tamilinayavaani',
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4'],
-      long_description=open('../README.rst','r').read(),
-      download_url='https://github.com/Ezhil-Language-Foundation/Tamilinaiya-Spellchecker/archive/v0.11.zip',#pip
+      long_description=open('README.rst','r').read(),
+      download_url='https://github.com/Ezhil-Language-Foundation/Tamilinaiya-Spellchecker/archive/v0.12.zip',#pip
       )
