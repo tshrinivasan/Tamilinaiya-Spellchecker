@@ -26,7 +26,7 @@ import os
 
 class TestSpellCheckWords(unittest.TestCase):
     def test_version(self):
-        self.assertGreaterEqual(tamilinayavaani.VERSION,'0.11')
+        self.assertGreaterEqual(float(tamilinayavaani.VERSION),0.11)
 
     def test_வலைவழிஅணுகுதல்(self):
         #REST_interface test
