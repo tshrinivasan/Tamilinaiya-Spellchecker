@@ -10,7 +10,7 @@ Installation
 ------------
 .. code-block:: bash
 
-    $ python3 -m pip install --upgrade tamilinayavaani>=0.1
+    $ python3 -m pip install --upgrade tamilinayavaani>=0.13
 
 Usage - in-memory
 -----------------
