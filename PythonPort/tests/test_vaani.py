@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import tamilinayavaani
 from tamilinayavaani.from_Csharp import gpathil11, checkviku, getsample
 from tamilinayavaani import checkword, check_sandhi, SpellChecker, SpellCheckerResult
 import os
@@ -24,6 +25,9 @@ import os
 
 
 class TestSpellCheckWords(unittest.TestCase):
+    def test_version(self):
+        self.assertGreaterEqual(tamilinayavaani.VERSION,'0.11')
+
     def test_வலைவழிஅணுகுதல்(self):
         #REST_interface test
         words = ['நேயர்கலே', 'நிகழ்சியைப்', 'பார்த்தீர்கலா']

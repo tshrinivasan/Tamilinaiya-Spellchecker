@@ -24,9 +24,7 @@ $ python3 -m pip install --upgrade tamilinayavaani>=0.1
  An file-based use of the library would look like,
 ```python3
     from tamilinaiyavaani import SpellChecker, SpellCheckerResult
-    with open(fname,'w') as fp:
-        [fp.write(word+'\n') for word in words]
-    result = SpellChecker(fname).run()
+    result = SpellChecker(fname).run() #fname is a full filename
     # result is a list of SpellCheckerResult objects.
 ```
 
