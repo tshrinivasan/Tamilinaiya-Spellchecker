@@ -7,7 +7,7 @@ from distutils.core import setup
 from codecs import open
 
 setup(name='tamilinayavaani',
-      version='0.12',
+      version='0.13',
       description='Tamil spell checker',
       author='Tamil Virtual Academy, Neechalkaran, T. Shrinivasan, Ashok Ramachandran, Mani K, Ezhil Language Foundation, et-al',
       author_email='tshrinivasan@gmail.com',
