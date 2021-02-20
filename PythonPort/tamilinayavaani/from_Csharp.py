@@ -5,8 +5,8 @@ import json
 import re
 import os
 import sys
+import codecs
 
-sys.path.append("/home/tamil-sandhi-checker")
 from tamilsandhi.sandhi_checker import check_sandhi
 DEBUG=False
 
@@ -29,7 +29,7 @@ def refreshcache(nword):
     cachesug[found] = "correct"
 
 
-with open(os.path.join(get_data_dir('json'),'db.lint.valid.json'), encoding='utf-8-sig') as json_file:
+with codecs.open(os.path.join(get_data_dir('json'),'db.lint.valid.json'), encoding='utf-8-sig') as json_file:
     db = json.load(json_file)
 
 # print(db[0]['DB'][3])
@@ -216,7 +216,7 @@ def gpathil11(mword, opt=True, mode='exe'):
     user_file = os.path.join(get_data_dir("koppu"),"user.txt")
     if os.path.exists(user_file):
         if (not _Cached._g_userOword) and (not _Cached._g_usergword):
-            with open(user_file, 'r') as fp:
+            with codecs.open(user_file, 'r','utf-8') as fp:
                 userfile = fp.readlines()
             userOword = userfile[0].split(',')
             usergword = userfile[1].split(',')
